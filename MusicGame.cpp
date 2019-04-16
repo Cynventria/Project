@@ -43,7 +43,6 @@ MusicGame::MusicGame(){  //建構式，初始化songs陣列
         if(dirs[i] != ".." && dirs[i] != ".")Getdir(dir+"\\"+dirs[i], files);
         for(int j = 0; j < files.size(); j++){
         	if(files[j].find(".osu", 0) != string::npos){
-        		//string str = dirs[i]+"\\"+files[j];
         		maps.push_back( ".\\song\\" + dirs[i]+"\\"+files[j] );
         		mapsDIR.push_back(".\\song\\" + dirs[i]+"\\");
         		cout << "found beatmap: " << dirs[i]+"\\"+files[j] << endl;
@@ -252,7 +251,6 @@ song MusicGame::selectScreen(){
 		
 	
 		for(int i = 0; i < 14; i++){           //PRINT LIST
-			//int pos = page*13+i;
 			
 			int pos = page+i;
 			int x = 100+(14-(i-scrollGain*0.2))*(i-scrollGain*0.2)*4;

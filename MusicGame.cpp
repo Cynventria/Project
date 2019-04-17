@@ -182,7 +182,7 @@ song MusicGame::selectScreen(){
 			if(songs[page+clicked].backGround.substr(songs[page+clicked].backGround.size()-4) != ".png"){
 				readimagefile( (songs[page+clicked].dir + songs[page+clicked].backGround).c_str(), 0, 0, 624, 351);
 				getimage(0, 0, 624, 351, songBG);
-				cleardevice();
+				putimage(0, 0, frame, COPY_PUT);
 			}
 			else{
 				memcpy(songBG, cantReadPNG, imagesize(0, 0, 624, 351));    //copy memory from "can't read PNG", can't do songBG=cantReadPNG since cantReadPNG will be free
@@ -276,8 +276,7 @@ song MusicGame::selectScreen(){
 		
 		
 		setvisualpage(cur_page);
-		cout << "selection page refreshed" << endl;
-		cout << page/songcount << endl;
+		//cout << "selection page refreshed" << endl;
 		
 		cout << "cursor now on " << on%100 << endl;
 		

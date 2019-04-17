@@ -17,8 +17,24 @@ class HitObject{
 		int y;
 		int time;
 		int type;
-		int hitSounds;
-		int endime;
+		int hitSound;
+		int repeat;
+		int length;
+		int sampleSet;
+		int sliderType;
+		vector<int> sliderPoints;
+		int endtime;
+};
+
+class TimingPoint{
+	public:
+		int offset;
+		int msPerBeat;
+		int meter;
+		int sampleSet;
+		int volume;
+		int inherited;
+		int kiaiMode;
 };
 
 class song{
@@ -28,11 +44,24 @@ class song{
 		string backGround;
 		string AudioFilename;
 		string Title;
+		string TitleUnicode;
 		string Artist;
+		string ArtistUnicode;
 		string Version;
 		string PreviewTime;
+		
+		float HPDrainRate;
+		float CircleSize;
+		float OverallDifficulty;
+		float ApproachRate;
+		float SliderMultiplier;
+		float SliderTickRate;
+		
+		vector<TimingPoint> timingpoints;
+		vector<HitObject> hitobjects;
 };
 
+/*
 class originalBeatmap : public song{
 	public:
 		float HPDrainRate;
@@ -40,13 +69,15 @@ class originalBeatmap : public song{
 		float OverallDifficulty;
 		float ApproachRate;
 		float SliderMultiplier;
-		int objectsCount;
-		HitObject *hitobjects;
-};
+		float SliderTickRate;
 
-class beatmap : public originalBeatmap{
+		vector<TimingPoint> timingpoints;
+		vector<HitObject> hitobjects;
+};*/
+
+/*class beatmap : public originalBeatmap{
 	
-};
+};*/
 
 class gameResult{
 	public:
@@ -70,9 +101,9 @@ class MusicGame{
 		char tmp[150];
 		
 		song selectScreen();  //methods
-		originalBeatmap createOriginalBeatmap(song);
-		beatmap createBeatmap(originalBeatmap);
-		gameResult game(beatmap);
+		void readBeatmap(int);
+		//beatmap createBeatmap(originalBeatmap);
+		//gameResult game(beatmap);
 		void resultScreen(song, gameResult);
 		
 		void pvInOut(int, int, int, void*, void*, void*);  //miscellaneous methods

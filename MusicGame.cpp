@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include <vector>
 #include "MusicGame.h"
-
+using namespace std;
 
 int MusicGame::Getdir(string dir, vector<string> &files){
     DIR *dp;//創立資料夾指標
@@ -72,6 +72,24 @@ MusicGame::MusicGame(){  //建構式，初始化songs陣列
 			else if(str.find("PreviewTime:") == 0){
     			songs[i].PreviewTime = str.substr(13);
     		}
+    		else if(str.find("HPDrainRate:") == 0){
+    			songs[i].HPDrainRate = atof(str.substr(13).c_str());
+    		}
+    		else if(str.find("CircleSize:") == 0){
+    			songs[i].CircleSize = atof(str.substr(11).c_str());
+			}
+			else if(str.find("OverallDifficulty:") == 0){
+    			songs[i].OverallDifficulty = atof(str.substr(18).c_str());
+			}
+			else if(str.find("ApproachRate:") == 0){
+    			songs[i].ApproachRate = atof(str.substr(13).c_str());
+			}
+			else if(str.find("SliderMultiplier:") == 0){
+    			songs[i].SliderMultiplier = atof(str.substr(17).c_str());
+			}
+			else if(str.find("SliderTickRate:") == 0){
+    			songs[i].SliderTickRate = atof(str.substr(15).c_str());
+			}
     		else if(str.find("0,0,\"") == 0){
     			songs[i].backGround = str.substr(5, str.substr(5).find('\"'));
 			}

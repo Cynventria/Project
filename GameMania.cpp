@@ -168,8 +168,8 @@ gameResult MusicGame::game(int i){
 				if(ato < 128 && ato > -128){
 					songs[i].hitobjects[j].type = 1;
 					cout << ato << " key" << (songs[i].hitobjects[j].x)%gameMode << endl;
-					sprintf(tmp, "%d", ato);
-					outtextxy(300, 300, tmp);
+					/*sprintf(tmp, "%d", ato);
+					outtextxy(300, 300, tmp);*/
 					
 					if(ato > 84 || ato < -84){
 						result.bad++;
@@ -184,7 +184,7 @@ gameResult MusicGame::game(int i){
 						last = 1;
 					}
 					result.combo++;
-					lastkeySig[(songs[i].hitobjects[j].x)%gameMode] = 1;
+					lastkeySig[(songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode] = 1;
 					cout << last << endl;
 				}
 			}

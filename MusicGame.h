@@ -97,13 +97,22 @@ class MusicGame{
 	private:
 		int songcount;   //properties
 		song *songs;
+		int gameMode;
+		char keys[7];
+		float speed;
+		int offset;
+		int mods;
+		int columnWidth;
+		int columnPosition;
+		int skin;
+		
 		int terminated;
 		char tmp[150];
 		
-		song selectScreen();  //methods
+		int selectScreen();  //methods
 		void readBeatmap(int);
 		//beatmap createBeatmap(originalBeatmap);
-		//gameResult game(beatmap);
+		gameResult game(int);
 		void resultScreen(song, gameResult);
 		
 		void pvInOut(int, int, int, void*, void*, void*);  //miscellaneous methods

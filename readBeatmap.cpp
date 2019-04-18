@@ -31,7 +31,11 @@ void MusicGame::readBeatmap(int i){
 		else if(str.find("[HitObjects]") == 0){
 			getline(ifs, str);
 			while(str[0] >= '0' && str[0] <= '9'){
-				HitObject obj;
+				HitObject obj = {0};
+				//obj.hit = 0;
+				
+				
+				
 				//deal with hitobject data;
 				//ignore filename
 				
@@ -50,10 +54,33 @@ void MusicGame::readBeatmap(int i){
 					
 				//x,y,time,type,hitSound,endTime:sampleSet:additionSet:customIndex:sampleVolume:filename
 				//329,192,16504,128,0,16620:0:0:0:0:
+				int p = 0;
+				string val;
+				while(str[p] != ','){
+					val += str[p];
+					p++;
+				}
+				obj.x = atoi(val.c_str());
+				val = "";
+				p++;
+				while(str[p] != ','){
+					val += str[p];
+					p++;
+				}
+				obj.y = atoi(val.c_str());
+				val = "";
+				p++;
+				while(str[p] != ','){
+					val += str[p];
+					p++;
+				}
+				obj.time = atoi(val.c_str());
+				val = "";
 				
+				cout << obj.x << ", " << obj.y << ", " << obj.time << endl;
 				
 				songs[i].hitobjects.push_back(obj);
-				getline(ifs, str);
+				if(!getline(ifs, str))break;
 			}
 		}
 	}

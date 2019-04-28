@@ -40,8 +40,8 @@ int MusicGame::selectScreen(){
 	getimage(0, 0, 1440, 900, PREVback);
 	
 
-
 	cleardevice();
+	settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
 	
 	
 	while(1){
@@ -71,6 +71,7 @@ int MusicGame::selectScreen(){
 			
 		
 			char re[20];
+			
 			string mciCommand = "open \"" + songs[page+clicked].dir + songs[page+clicked].AudioFilename + "\" type mpegvideo alias mp3";
 			cout << "open mp3 " << songs[page+clicked].AudioFilename << endl;
 			mciSendString(mciCommand.c_str(), re, 20, NULL);
@@ -95,6 +96,9 @@ int MusicGame::selectScreen(){
 							mciSendString("stop mp3", NULL, 0, NULL);
 							mciSendString("close mp3", NULL, 0, NULL);
 							
+							
+
+							
 							free(bg);
 							free(bar);
 							free(up);
@@ -112,6 +116,7 @@ int MusicGame::selectScreen(){
 				//stop and close music
 				mciSendString("stop mp3", NULL, 0, NULL);
 				mciSendString("close mp3", NULL, 0, NULL);
+
 				
 //resune to selection page
 				setactivepage(-cur_page+1);
@@ -130,6 +135,7 @@ int MusicGame::selectScreen(){
 			free(frame);
 			free(songBG);
 			clicked = -1;
+			settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
 		}
 		
 
@@ -138,7 +144,6 @@ int MusicGame::selectScreen(){
 		cur_page = -cur_page + 1;    //0 1 toggle
         setactivepage(cur_page);
    		cleardevice();
-		settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
 		
 	
 		for(int i = 0; i < 14; i++){           //PRINT LIST
@@ -204,14 +209,14 @@ int MusicGame::selectScreen(){
 			}
 		}
 		if(mousex()>5 && mousex()<70 && mousey()>10 && mousey()<75){  //scroll up
-			if(page > 0)  scrollGain--;
+			if(page > 0)  scrollGain-=2;
 			if(scrollGain <= -5){
 	    		page--;
 	    		scrollGain = 0;
 	    	}
 		}
 		else if(mousex()>5 && mousex()<70 && mousey()>825 && mousey()<890){  //scroll down
-			if(page + 14 < songcount)  scrollGain++;
+			if(page + 14 < songcount)  scrollGain+=2;
 			if(scrollGain >= 5){
 				page++;
 				scrollGain = 0;
@@ -221,7 +226,7 @@ int MusicGame::selectScreen(){
 		
 //detection end
 		
-		Sleep(10);
+		Sleep(12);
 
 	}
 	

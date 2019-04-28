@@ -23,10 +23,10 @@ int MusicGame::Getdir(string dir, vector<string> &files){
 }
 
 
-MusicGame::MusicGame(){  //建構式，初始化songs陣列 
-	terminated = 0;
-	gameMode = 4;
-	speed = 2;
+MusicGame::MusicGame(){  //建構式，
+	terminated = 0; //whether the game is end
+	gameMode = 4; //keys
+	speed = 2; //drop speed
 	columnWidth = 90;
 	columnPosition = 400;
 	offset = -70;
@@ -35,6 +35,8 @@ MusicGame::MusicGame(){  //建構式，初始化songs陣列
 //LOADING
 	sprintf(tmp, "LOADING");
 	outtextxy(700, 400, tmp);
+	
+//建構式
 	
     string dir = ".\\song";//資料夾路徑(絕對位址or相對位址)
     vector<string> dirs = vector<string>(); //第一層資料夾名稱 

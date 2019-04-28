@@ -16,11 +16,8 @@ using namespace std;
 
 gameResult MusicGame::game(int i){
 	cout << "gamestart" << endl;
-	gameResult result = {0};
 	int cur_page = 0;
 	
-	
-
 	cleardevice();
 
 	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
@@ -34,7 +31,15 @@ gameResult MusicGame::game(int i){
 	}
 	getimage(0, 0, 1440, 900, BG);
 	
-	void *zero = malloc(imagesize(0, 0, 47 ,64));
+	void *N[10];
+	for(int j = 0; j < 10; j++){
+		N[j] = malloc(imagesize(0, 0, 47 ,64));
+		sprintf(tmp, ".\\resources\\%d.jpg", j);
+		readimagefile(tmp, 0, 0, 47, 64);
+		getimage(0, 0, 47, 64, N[j]);
+	}
+	
+	/*void *zero = malloc(imagesize(0, 0, 47 ,64));
 	readimagefile(".\\resources\\0.jpg", 0, 0, 47, 64);
 	getimage(0, 0, 47, 64, zero);
 	void *one = malloc(imagesize(0, 0, 47 ,64));
@@ -63,7 +68,7 @@ gameResult MusicGame::game(int i){
 	getimage(0, 0, 47, 64, eight);
 	void *nine = malloc(imagesize(0, 0, 47 ,64));
 	readimagefile(".\\resources\\9.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, nine);
+	getimage(0, 0, 47, 64, nine);*/
 	
 	void *perfect = malloc(imagesize(0, 0, 256, 72));
 	readimagefile(".\\resources\\perfect.jpg", 0, 0, 256, 72);
@@ -82,6 +87,15 @@ gameResult MusicGame::game(int i){
 	getimage(0, 0, 256, 72, miss);
 	
 	
+	void *paused = malloc(imagesize(0, 0, 1240, 200));
+	readimagefile( ".\\resources\\paused2.jpg", 200, 350, 1440, 550);  
+	getimage(200, 350, 1440, 550, paused);
+	void *pause_back = malloc(imagesize(0, 0, 1440, 200));
+	readimagefile( ".\\resources\\pause_back.jpg", 0, 0, 1440, 200);  
+	getimage(0, 0, 1440, 200, pause_back);
+	
+	putimage(0, 0, BG, COPY_PUT);
+	
 	
 	
 	
@@ -99,11 +113,23 @@ gameResult MusicGame::game(int i){
 	
 	mciSendString("status mp3 length", re, 20, 0);
 	int length = atoi(re);
-	int position = 0;
-	int old = 0;
-	int keySig[4] = {0};
-	int lastkeySig[4] = {0};
+	gameResult result = {0};
+	int position = 0;  //music position
+	int old = 0;  
+	int *keySig = (int*)malloc(sizeof(int)*gameMode);  //key signal
+	int *lastkeySig = (int*)malloc(sizeof(int)*gameMode);  //last key signal, for detecting edges
+	
+	result.life = 1000;
+	result.passed = 1;
 	int last = 0;
+	int esc = 0;  //pause key
+	
+	
+	for(int j = 0; j < songs[i].hitobjects.size(); j++){
+		cout << songs[i].hitobjects[j].x << ", " << songs[i].hitobjects[j].y << ", " << songs[i].hitobjects[j].time << endl;
+	} 
+	
+	
 	settextstyle(GOTHIC_FONT, HORIZ_DIR, 5);
 	mciSendString("play mp3", NULL, 0, NULL);
 	while(position+offset < length){
@@ -120,14 +146,13 @@ gameResult MusicGame::game(int i){
 		//settextstyle(GOTHIC_FONT, HORIZ_DIR, 5);
 		sprintf(tmp, "%dx", result.combo);
 		outtextxy(columnPosition+150, 200, tmp);
-		
+//put image 
 		if(last == 0)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, miss, COPY_PUT);
 		else if(last == 1)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, perfect, COPY_PUT);
 		else if(last == 2)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, great, COPY_PUT);
 		else if(last == 3)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, bad, COPY_PUT);
-		
-		//outtextxy(columnPosition+120, 600, tmp);
-		
+
+//draw lines	
 		setcolor(WHITE);
 		for(int j = 0; j <= gameMode; j++){
 			line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
@@ -141,99 +166,175 @@ gameResult MusicGame::game(int i){
 			}
 		}
 		
-		
+//judgement and print notes start
+//cout << "judgement and print notes start" << endl;
 		mciSendString("status mp3 position", re,20, 0);
 		position = atoi(re);
 		
 		
 		
 		position += offset;
-		//cout << position << endl;
 		
-
-		
+		 
 		
 		setfillstyle(1, WHITE);
+		//cout << lastkeySig[0]  << keySig[0] << lastkeySig[1]  << keySig[1] <<lastkeySig[2]  << keySig[2] <<lastkeySig[3]  << keySig[3] << endl;
+		
 		for(int j = 0; j < songs[i].hitobjects.size(); j++){
-			
-			if(songs[i].hitobjects[j].type == 1) continue;
+			if(songs[i].hitobjects[j].hit == 0) continue;
 			int ato = songs[i].hitobjects[j].time - position;
+			if(ato > 2000) continue;
 			
-
-			int x = (songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode;
 			int y = 800-speed*ato;
 			
+			int each = 1;
 			
-			if(keySig[(songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode] == 1 && lastkeySig[(songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode] == 0){
-				if(ato < 128 && ato > -128){
-					songs[i].hitobjects[j].type = 1;
-					cout << ato << " key" << (songs[i].hitobjects[j].x)%gameMode << endl;
-					/*sprintf(tmp, "%d", ato);
-					outtextxy(300, 300, tmp);*/
-					
-					if(ato > 84 || ato < -84){
-						result.bad++;
-						last = 3;
+			if(j != 0){
+				int xOffset = (songs[i].hitobjects[j].x - songs[i].hitobjects[j-1].x);
+				int yOffset = (songs[i].hitobjects[j].y - songs[i].hitobjects[j-1].y);
+				int timeOffset = (songs[i].hitobjects[j].time - songs[i].hitobjects[j-1].time);
+				if(timeOffset != 0) {
+					each = (xOffset*xOffset + yOffset*yOffset) / timeOffset;
+					if(each < 120) each = 1;
+					else if(each < 200) each = 2;
+					else if(each < 270) each = 3;
+					else each = 4;
+				}
+				
+			}
+			//if(songs[i].hitobjects[j].hit == -1)songs[i].hitobjects[j].hit = (1<<(each)) -1;  //if number of multi key hasn't be calculated, set to full in binary
+			//minus to 0 means all keys have been hit
+//cout << "mk " << songs[i].hitobjects[j].hit << "with each " << each << endl; 
+			
+			int *Locas = (int*)malloc(sizeof(int)*each);
+			Locas[0] = (songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode;
+			for(int k = 1; k < each; k++){
+				Locas[k] = (Locas[0] + (songs[i].hitobjects[j].y*songs[i].hitobjects[j].x)%gameMode)%gameMode;
+				for(int l = 0; l < k; l++){
+					if(Locas[l] == Locas[k]){
+						Locas[k] = (Locas[k]+1)%gameMode;
+						l--;
 					}
-					else if(ato > 38 || ato < -38){
-						result.great++;
-						last = 2;
-					}
-					else {
-						result.perfect++;
-						last = 1;
-					}
-					result.combo++;
-					lastkeySig[(songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode] = 1;
-					cout << last << endl;
 				}
 			}
-			if(ato < -128){
-				songs[i].hitobjects[j].type = 1;
-				last = 0;
-				result.combo=0;
+			
+			if(songs[i].hitobjects[j].hit == -1){
+				songs[i].hitobjects[j].hit = 0;
+				for(int k = 0; k < each; k++){
+					songs[i].hitobjects[j].hit += 1<<(Locas[k]);
+				}
 			}
+//cout << "multi-key cal finished" << endl;
+			for(int k = 0; k < each; k++){ 
+				int tmp = (1<<(Locas[k])) & songs[i].hitobjects[j].hit;
+				if( tmp == 0) continue;
+				//cout << songs[i].hitobjects[j].hit << endl;
+				if(keySig[Locas[k]] == 1 && lastkeySig[Locas[k]] == 0){  //detect positive edge
+					if(ato < 128 && ato > -128){
+//cout << "detected key " << Locas[k] << " pressed" << endl;
+//cout << "active note in " << songs[i].hitobjects[j].time << endl;
+						songs[i].hitobjects[j].hit-= (1<<(Locas[k]));	
+//cout << "hit left " << 	songs[i].hitobjects[j].hit << endl;
+						
+						if(ato > 84 || ato < -84){
+							result.bad++;
+							result.life -= 75;
+							last = 3;
+						}
+						else if(ato > 38 || ato < -38){
+							result.great++;
+							last = 2;
+						}
+						else {
+							result.perfect++;
+							result.life += 25;
+							if(result.life >= 1000) result.life = 1000;
+							last = 1;
+						}
+						result.combo++;
+						if(result.combo>result.maxcombo)result.maxcombo = result.combo;
+						lastkeySig[Locas[k]] = 1;
+
+//cout << "key " << Locas[k] << " positive edge removed" << endl;
+
+					}
+				}
+				
+
+				
+				
+				if(ato < -128){
+					songs[i].hitobjects[j].hit-=(1<<(Locas[k]));
+					last = 0;
+					result.combo=0;
+					result.life -= 100;
+				}
+				
+				
+				
+				
+				bar(columnPosition+Locas[k]*columnWidth , y-20, columnPosition+(Locas[k]+1)*columnWidth, y);
+			}
+			free(Locas);
 			
 			
-			
-			
-			bar(columnPosition+x*columnWidth , y-20, columnPosition+(x+1)*columnWidth, y);
 		}
+//cout << "judge finished" <<endl; 
 		
 		
+		
+//life
+
+		if(result.life < 0){
+			cout << "failed" << endl;
+			result.passed = 0;
+		}		
 		
 		setvisualpage(cur_page);
-		
+
 		
 		lastkeySig[0] = keySig[0];
 		lastkeySig[1] = keySig[1];
 		lastkeySig[2] = keySig[2];
 		lastkeySig[3] = keySig[3];
 		
-		if(GetAsyncKeyState(Z_KEY)==0) keySig[0]=0;
-        if(GetAsyncKeyState(X_KEY)==0) keySig[1]=0;
-        if(GetAsyncKeyState(N_KEY)==0) keySig[2]=0;
-        if(GetAsyncKeyState(M_KEY)==0) keySig[3]=0;
+        
         
         if(GetAsyncKeyState(Z_KEY)!=0) keySig[0]=1;
+        else keySig[0]=0;
         if(GetAsyncKeyState(X_KEY)!=0) keySig[1]=1;
+        else keySig[1]=0;
         if(GetAsyncKeyState(N_KEY)!=0) keySig[2]=1;
+        else keySig[2]=0;
         if(GetAsyncKeyState(M_KEY)!=0) keySig[3]=1;
-		
-		
-		
-		
-		
-		
-		
-		
-		Sleep(1);
-		
+        else keySig[3]=0;
+        
+        
+		if(GetAsyncKeyState(0x1B)!=0 && !esc){  //escape
+			mciSendString("pause mp3", NULL, 0, NULL);
+			int opt = pauseScreen(paused, pause_back);
+			if(opt == 1){
+				Sleep(300);
+			}
+			else if(opt == 2){
+				//renew map 
+			}
+			else if(opt == 3){
+				goto END;
+			}
+			mciSendString("resume mp3", NULL, 0, NULL);
+			esc = 1;
+		}
+		else esc = 0;
 		
 
+		Sleep(8);
+		
 		
 	}
 	
+	
+	END:
 	songs[i].timingpoints.clear();
 	songs[i].hitobjects.clear();
 	free(BG);

@@ -16,6 +16,8 @@ class HitObject{
 		int x;
 		int y;
 		int time;
+		int hit;
+		int *hits;
 		int type;
 		int hitSound;
 		int repeat;
@@ -24,17 +26,21 @@ class HitObject{
 		int sliderType;
 		vector<int> sliderPoints;
 		int endtime;
+		
+		HitObject(string); 
 };
 
 class TimingPoint{
 	public:
 		int offset;
-		int msPerBeat;
+		float msPerBeat;
 		int meter;
 		int sampleSet;
 		int volume;
 		int inherited;
 		int kiaiMode;
+		
+		TimingPoint(string);
 };
 
 class song{
@@ -60,24 +66,6 @@ class song{
 		vector<TimingPoint> timingpoints;
 		vector<HitObject> hitobjects;
 };
-
-/*
-class originalBeatmap : public song{
-	public:
-		float HPDrainRate;
-		float CircleSize;
-		float OverallDifficulty;
-		float ApproachRate;
-		float SliderMultiplier;
-		float SliderTickRate;
-
-		vector<TimingPoint> timingpoints;
-		vector<HitObject> hitobjects;
-};*/
-
-/*class beatmap : public originalBeatmap{
-	
-};*/
 
 class gameResult{
 	public:
@@ -113,6 +101,8 @@ class MusicGame{
 		void readBeatmap(int);
 		//beatmap createBeatmap(originalBeatmap);
 		gameResult game(int);
+		int pauseScreen(void*, void*);
+		
 		void resultScreen(song, gameResult);
 		
 		void pvInOut(int, int, int, void*, void*, void*);  //miscellaneous methods

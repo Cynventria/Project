@@ -110,6 +110,7 @@ MusicGame::MusicGame(){  //«Øºc¦¡¡A
 }
 
 
+
 int MusicGame::GameMain(){
 	while(terminated != 1){
 		int selected = selectScreen();

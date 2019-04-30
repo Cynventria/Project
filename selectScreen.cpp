@@ -174,7 +174,7 @@ int MusicGame::selectScreen(){
 		setvisualpage(cur_page);
 		//cout << "selection page refreshed" << endl;
 		
-		cout << "cursor now on " << on%100 << endl;
+		//cout << "cursor now on " << on%100 << endl;
 		
 //refresh end
 //detection start
@@ -209,14 +209,14 @@ int MusicGame::selectScreen(){
 			}
 		}
 		if(mousex()>5 && mousex()<70 && mousey()>10 && mousey()<75){  //scroll up
-			if(page > 0)  scrollGain-=2;
+			if(page > 0)  scrollGain-=1;
 			if(scrollGain <= -5){
 	    		page--;
 	    		scrollGain = 0;
 	    	}
 		}
 		else if(mousex()>5 && mousex()<70 && mousey()>825 && mousey()<890){  //scroll down
-			if(page + 14 < songcount)  scrollGain+=2;
+			if(page + 14 < songcount)  scrollGain+=1;
 			if(scrollGain >= 5){
 				page++;
 				scrollGain = 0;
@@ -226,7 +226,7 @@ int MusicGame::selectScreen(){
 		
 //detection end
 		
-		Sleep(12);
+		Sleep(5);
 
 	}
 	

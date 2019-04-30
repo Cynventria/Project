@@ -218,7 +218,7 @@ TimingPoint::TimingPoint(string str){
 	val = "";
 	p++;
 	
-	cout << offset << ", " << msPerBeat << ", " << meter << ", " << sampleSet << ", " << volume << ", " << kiaiMode << endl;
+	//cout << offset << ", " << msPerBeat << ", " << meter << ", " << sampleSet << ", " << volume << ", " << kiaiMode << endl;
 
 }
 

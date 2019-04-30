@@ -72,6 +72,7 @@ class gameResult{
 		int passed;
 		int perfect;
 		int great;
+		int good;
 		int bad;
 		int miss;
 		int score;

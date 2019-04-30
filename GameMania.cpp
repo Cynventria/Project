@@ -39,38 +39,8 @@ gameResult MusicGame::game(int i){
 		getimage(0, 0, 47, 64, N[j]);
 	}
 	
-	/*void *zero = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\0.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, zero);
-	void *one = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\1.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, one);
-	void *two = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\2.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, two);
-	void *three = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\3.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, three);
-	void *four = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\4.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, four);
-	void *five = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\5.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, five);
-	void *six = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\6.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, six);
-	void *seven = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\7.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, seven);
-	void *eight = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\8.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, eight);
-	void *nine = malloc(imagesize(0, 0, 47 ,64));
-	readimagefile(".\\resources\\9.jpg", 0, 0, 47, 64);
-	getimage(0, 0, 47, 64, nine);*/
 	
-	void *perfect = malloc(imagesize(0, 0, 256, 72));
+	/*void *perfect = malloc(imagesize(0, 0, 256, 72));
 	readimagefile(".\\resources\\perfect.jpg", 0, 0, 256, 72);
 	getimage(0, 0, 256, 72, perfect);
 	void *great = malloc(imagesize(0, 0, 256, 72));
@@ -84,7 +54,44 @@ gameResult MusicGame::game(int i){
 	getimage(0, 0, 256, 72, bad);
 	void *miss = malloc(imagesize(0, 0, 256, 72));
 	readimagefile(".\\resources\\miss.jpg", 0, 0, 256, 72);
-	getimage(0, 0, 256, 72, miss);
+	getimage(0, 0, 256, 72, miss);*/
+	
+	void *judge[5][2];
+	judge[0][0] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\B_perfect.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[0][0]);
+	judge[0][1] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\F_perfect.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[0][1]);
+	judge[1][0] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\B_great.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[1][0]);
+	judge[1][1] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\F_great.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[1][1]);
+	judge[2][0] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\B_good.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[2][0]);
+	judge[2][1] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\F_good.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[2][1]);
+	judge[3][0] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\B_bad.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[3][0]);
+	judge[3][1] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\F_bad.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[3][1]);
+	judge[4][0] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\B_miss.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[4][0]);
+	judge[4][1] = malloc(imagesize(0, 0, 256, 72));
+	readimagefile(".\\resources\\F_miss.jpg", 0, 0, 256, 72);
+	getimage(0, 0, 256, 72, judge[4][1]);
+
+	
+	
+	
+	
 	
 	
 	void *paused = malloc(imagesize(0, 0, 1240, 200));
@@ -121,18 +128,22 @@ gameResult MusicGame::game(int i){
 	
 	result.life = 1000;
 	result.passed = 1;
-	int last = 0;
+	int last = -1;
 	int esc = 0;  //pause key
 	
 	
-	for(int j = 0; j < songs[i].hitobjects.size(); j++){
+	/*for(int j = 0; j < songs[i].hitobjects.size(); j++){
 		cout << songs[i].hitobjects[j].x << ", " << songs[i].hitobjects[j].y << ", " << songs[i].hitobjects[j].time << endl;
-	} 
+	} */
+	
 	
 	
 	settextstyle(GOTHIC_FONT, HORIZ_DIR, 5);
 	mciSendString("play mp3", NULL, 0, NULL);
-	while(position+offset < length){
+	
+	
+//start loop
+	while(songs[i].hitobjects.back().time - offset > position/*position+offset < length*/){
 		
 		cur_page = -cur_page+1;
 		setactivepage(cur_page);
@@ -144,13 +155,39 @@ gameResult MusicGame::game(int i){
 		bar(columnPosition, 0, columnPosition+columnWidth*gameMode, 900);
 		
 		//settextstyle(GOTHIC_FONT, HORIZ_DIR, 5);
-		sprintf(tmp, "%dx", result.combo);
-		outtextxy(columnPosition+150, 200, tmp);
-//put image 
-		if(last == 0)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, miss, COPY_PUT);
-		else if(last == 1)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, perfect, COPY_PUT);
-		else if(last == 2)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, great, COPY_PUT);
-		else if(last == 3)	putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, bad, COPY_PUT);
+		//sprintf(tmp, "%dx", result.combo);
+		//outtextxy(columnPosition+150, 200, tmp);
+		int t = 100000;
+		
+		for(int j = 6; j > 0; j--){
+			if(result.combo % t != result.combo){
+				int t2 = j;
+				t*=10;
+				for(; j >0; j--){
+					putimage(columnPosition+((columnWidth*gameMode)-(t2*47))/2 + 47*(t2-j), 200, N[(result.combo % t )/(t/10)], COPY_PUT);
+					t/=10;
+				}
+				break;
+			}
+			t/=10;
+		}
+		
+		t = 10;
+		for(int j = 0; j < 10; j++){
+			putimage(1440-47*j, 0, N[result.score%t / (t/10)], COPY_PUT);
+			t*=10;
+		}
+		
+		setcolor(CYAN);
+		arc(columnPosition+columnWidth*gameMode/2, 232, 90, result.life*360/1000+90, 110);//life
+		setcolor(WHITE);
+		
+//put judgement image back
+		t = last;
+		if(t != -1){
+			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][0], XOR_PUT);
+		}
+		
 
 //draw lines	
 		setcolor(WHITE);
@@ -195,9 +232,9 @@ gameResult MusicGame::game(int i){
 				int timeOffset = (songs[i].hitobjects[j].time - songs[i].hitobjects[j-1].time);
 				if(timeOffset != 0) {
 					each = (xOffset*xOffset + yOffset*yOffset) / timeOffset;
-					if(each < 120) each = 1;
-					else if(each < 200) each = 2;
-					else if(each < 270) each = 3;
+					if(each < 150) each = 1;
+					else if(each < 220) each = 2;
+					else if(each < 300) each = 3;
 					else each = 4;
 				}
 				
@@ -230,26 +267,37 @@ gameResult MusicGame::game(int i){
 				if( tmp == 0) continue;
 				//cout << songs[i].hitobjects[j].hit << endl;
 				if(keySig[Locas[k]] == 1 && lastkeySig[Locas[k]] == 0){  //detect positive edge
-					if(ato < 128 && ato > -128){
+					if(ato < 135 && ato > -135){
 //cout << "detected key " << Locas[k] << " pressed" << endl;
 //cout << "active note in " << songs[i].hitobjects[j].time << endl;
 						songs[i].hitobjects[j].hit-= (1<<(Locas[k]));	
 //cout << "hit left " << 	songs[i].hitobjects[j].hit << endl;
 						
-						if(ato > 84 || ato < -84){
+						if(ato > 75 || ato < -75){
 							result.bad++;
-							result.life -= 75;
+							result.life -= 35;
+							result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
 							last = 3;
 						}
-						else if(ato > 38 || ato < -38){
-							result.great++;
+						else if(ato > 50 || ato < -50){
+							result.good++;
+							result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
 							last = 2;
+						}
+						
+						else if(ato > 25 || ato < -25){
+							result.great++;
+							result.life += 5;
+							result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
+							last = 1;
 						}
 						else {
 							result.perfect++;
 							result.life += 25;
 							if(result.life >= 1000) result.life = 1000;
-							last = 1;
+							result.score += 1200+1200.0*(result.combo*result.combo)/(5000*5000);
+							last = 0;
+							
 						}
 						result.combo++;
 						if(result.combo>result.maxcombo)result.maxcombo = result.combo;
@@ -259,15 +307,12 @@ gameResult MusicGame::game(int i){
 
 					}
 				}
-				
-
-				
-				
-				if(ato < -128){
+				if(ato < -135){
 					songs[i].hitobjects[j].hit-=(1<<(Locas[k]));
-					last = 0;
+					last = 4;
+					result.miss++;
 					result.combo=0;
-					result.life -= 100;
+					result.life -= 75;
 				}
 				
 				
@@ -280,17 +325,30 @@ gameResult MusicGame::game(int i){
 			
 		}
 //cout << "judge finished" <<endl; 
+
+//put judgement image front
+		if(t != -1){
+			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][0], XOR_PUT);
+			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][1], OR_PUT);
+		}
+		
 		
 		
 		
 //life
 
+		setvisualpage(cur_page);
+
 		if(result.life < 0){
 			cout << "failed" << endl;
 			result.passed = 0;
-		}		
+			goto RESULT;
+		}
+		else if(result.life > 1000){
+			result.life = 1000;
+		}	
+		//cout << result.life << endl;
 		
-		setvisualpage(cur_page);
 
 		
 		lastkeySig[0] = keySig[0];
@@ -333,11 +391,54 @@ gameResult MusicGame::game(int i){
 		
 	}
 	
+	Sleep(1000);
+	RESULT:
+		
+	putimage(0, 0, BG, COPY_PUT);
+	
+	sprintf(tmp, "%d", result.perfect);
+	outtextxy(550, 300, tmp);
+	sprintf(tmp, "%d", result.great);
+	outtextxy(550, 400, tmp);
+	sprintf(tmp, "%d", result.good);
+	outtextxy(550, 500, tmp);
+	sprintf(tmp, "%d", result.bad);
+	outtextxy(550, 600, tmp);
+	sprintf(tmp, "%d", result.miss);
+	outtextxy(550, 700, tmp);
+	if(result.passed == 0){
+		outtextxy(200, 200, "FAILED");
+	}
+	else{
+		sprintf(tmp, "%d", result.score);
+		outtextxy(200, 200, tmp);
+		
+	}
+	
+	
+	putimage(200, 300, judge[0][1], COPY_PUT);
+	putimage(200, 400, judge[1][1], COPY_PUT);
+	putimage(200, 500, judge[2][1], COPY_PUT);
+	putimage(200, 600, judge[3][1], COPY_PUT);
+	putimage(200, 700, judge[4][1], COPY_PUT);
+	
+	getch();
+
+	
 	
 	END:
 	songs[i].timingpoints.clear();
 	songs[i].hitobjects.clear();
 	free(BG);
+	for(int j = 0; j < 10; j++){
+		free(N[j]);
+	}
+	for(int j = 0; j < 5; j++){
+		free(judge[j][0]);
+		free(judge[j][1]);
+	}
+	free(paused);
+	free(pause_back);
 	mciSendString("stop mp3", NULL, 0, NULL);
 	mciSendString("close mp3", NULL, 0, NULL);
 	//return result;

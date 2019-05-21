@@ -15,12 +15,17 @@ using namespace std;
 #define M_KEY 0x4D
 
 gameResult MusicGame::game(int i){
+	START:
 	cout << "gamestart" << endl;
+	
 	int cur_page = 0;
 	
 	cleardevice();
 
 	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	
+	setvisualpage(0);
+	setactivepage(0);
 	
 	void *BG =malloc(imagesize(0, 0, 1440, 900));     //Check if PV image is PNG
 	if(songs[i].backGround.substr(songs[i].backGround.size()-4) != ".png"){
@@ -30,6 +35,9 @@ gameResult MusicGame::game(int i){
 		readimagefile( ".\\resources\\bg.jpg", 0, 0, 1440, 900);
 	}
 	getimage(0, 0, 1440, 900, BG);
+	
+	setvisualpage(0);
+	setactivepage(1);
 	
 	void *N[10];
 	for(int j = 0; j < 10; j++){
@@ -89,8 +97,23 @@ gameResult MusicGame::game(int i){
 	getimage(0, 0, 256, 72, judge[4][1]);
 
 	
+	void *light = malloc(imagesize(0, 0, columnWidth, 500));
+	readimagefile(".\\resources\\light.jpg", 0, 0, columnWidth, 500);
+	getimage(0, 0, columnWidth, 500, light);
 	
-	
+	void *lights[4];
+	lights[0] = malloc(imagesize(0, 0, columnWidth, 500));
+	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
+	getimage(0, 0, columnWidth, 500, lights[0]);
+	lights[1] = malloc(imagesize(0, 0, columnWidth, 500));
+	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
+	getimage(0, 0, columnWidth, 500, lights[1]);
+	lights[2] = malloc(imagesize(0, 0, columnWidth, 500));
+	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
+	getimage(0, 0, columnWidth, 500, lights[2]);
+	lights[3] = malloc(imagesize(0, 0, columnWidth, 500));
+	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
+	getimage(0, 0, columnWidth, 500, lights[3]);
 	
 	
 	
@@ -100,6 +123,9 @@ gameResult MusicGame::game(int i){
 	void *pause_back = malloc(imagesize(0, 0, 1440, 200));
 	readimagefile( ".\\resources\\pause_back.jpg", 0, 0, 1440, 200);  
 	getimage(0, 0, 1440, 200, pause_back);
+	
+	
+	
 	
 	putimage(0, 0, BG, COPY_PUT);
 	
@@ -182,6 +208,11 @@ gameResult MusicGame::game(int i){
 		arc(columnPosition+columnWidth*gameMode/2, 232, 90, result.life*360/1000+90, 110);//life
 		setcolor(WHITE);
 		
+		for(int k = 0;  k< gameMode ; k++){
+			if(keySig[k]){
+				putimage(columnPosition+(columnWidth*k), 400, light, COPY_PUT);
+			}
+		}
 //put judgement image back
 		t = last;
 		if(t != -1){
@@ -197,9 +228,14 @@ gameResult MusicGame::game(int i){
 		line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
 		
 				setfillstyle(1, WHITE);
+				
+//draw light 
 		for(int j = 0; j < 4; j++){
 			if(keySig[j]==1){
 				bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
+			}
+			if(keySig[j] == 1 && lastkeySig[j] == 0){
+				PlaySound(".\\resources\\normal.wav", NULL, SND_FILENAME | SND_ASYNC);  
 			}
 		}
 		
@@ -265,27 +301,29 @@ gameResult MusicGame::game(int i){
 			for(int k = 0; k < each; k++){ 
 				int tmp = (1<<(Locas[k])) & songs[i].hitobjects[j].hit;
 				if( tmp == 0) continue;
-				//cout << songs[i].hitobjects[j].hit << endl;
 				if(keySig[Locas[k]] == 1 && lastkeySig[Locas[k]] == 0){  //detect positive edge
-					if(ato < 135 && ato > -135){
+
+
+
+					if(ato < 150 && ato > -150){
 //cout << "detected key " << Locas[k] << " pressed" << endl;
 //cout << "active note in " << songs[i].hitobjects[j].time << endl;
 						songs[i].hitobjects[j].hit-= (1<<(Locas[k]));	
 //cout << "hit left " << 	songs[i].hitobjects[j].hit << endl;
 						
-						if(ato > 75 || ato < -75){
+						if(ato > 85 || ato < -85){
 							result.bad++;
 							result.life -= 35;
 							result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
 							last = 3;
 						}
-						else if(ato > 50 || ato < -50){
+						else if(ato > 60 || ato < -60){
 							result.good++;
 							result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
 							last = 2;
 						}
 						
-						else if(ato > 25 || ato < -25){
+						else if(ato > 40 || ato < -40){
 							result.great++;
 							result.life += 5;
 							result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
@@ -302,12 +340,23 @@ gameResult MusicGame::game(int i){
 						result.combo++;
 						if(result.combo>result.maxcombo)result.maxcombo = result.combo;
 						lastkeySig[Locas[k]] = 1;
-
+cout << ato <<endl; 
 //cout << "key " << Locas[k] << " positive edge removed" << endl;
 
 					}
 				}
-				if(ato < -135){
+				
+//detect neg edge	
+				else if(keySig[Locas[k]] == 1 && lastkeySig[Locas[k]] == 1){
+					
+				}
+				
+//detect neg edge
+				else if(keySig[Locas[k]] == 0 && lastkeySig[Locas[k]] == 1){
+					
+				}
+
+				if(ato < -150){
 					songs[i].hitobjects[j].hit-=(1<<(Locas[k]));
 					last = 4;
 					result.miss++;
@@ -318,6 +367,12 @@ gameResult MusicGame::game(int i){
 				
 				
 				
+				/*if(songs[i].hitobjects[j].type  != 1){
+					int duration = songs[i].hitobjects[j].length / (songs[i].SliderMultiplier*100) * songs[i].timingpoints[0].msPerBeat;
+					cout << "slider length " << duration <<endl;
+					cout << songs[i].hitobjects[j].type << endl;
+					bar(columnPosition+Locas[k]*columnWidth +20, y-20 - duration*speed, columnPosition+(Locas[k]+1)*columnWidth-20, y);
+				}*/
 				bar(columnPosition+Locas[k]*columnWidth , y-20, columnPosition+(Locas[k]+1)*columnWidth, y);
 			}
 			free(Locas);
@@ -342,7 +397,7 @@ gameResult MusicGame::game(int i){
 		if(result.life < 0){
 			cout << "failed" << endl;
 			result.passed = 0;
-			goto RESULT;
+			goto END;
 		}
 		else if(result.life > 1000){
 			result.life = 1000;
@@ -367,7 +422,9 @@ gameResult MusicGame::game(int i){
         if(GetAsyncKeyState(M_KEY)!=0) keySig[3]=1;
         else keySig[3]=0;
         
-        
+      
+	  
+//PAUSE SCREEN 
 		if(GetAsyncKeyState(0x1B)!=0 && !esc){  //escape
 			mciSendString("pause mp3", NULL, 0, NULL);
 			int opt = pauseScreen(paused, pause_back);
@@ -376,9 +433,29 @@ gameResult MusicGame::game(int i){
 			}
 			else if(opt == 2){
 				//renew map 
+				songs[i].timingpoints.clear();
+				songs[i].hitobjects.clear();
+				free(BG);
+				for(int j = 0; j < 10; j++){
+					free(N[j]);
+				}
+				for(int j = 0; j < 5; j++){
+					free(judge[j][0]);
+					free(judge[j][1]);
+				}
+				free(paused);
+				free(pause_back);
+				mciSendString("stop mp3", NULL, 0, NULL);
+				mciSendString("close mp3", NULL, 0, NULL);
+				
+				readBeatmap(i);
+				
+				goto START;
 			}
 			else if(opt == 3){
+				result.passed = -100;
 				goto END;
+				
 			}
 			mciSendString("resume mp3", NULL, 0, NULL);
 			esc = 1;
@@ -391,39 +468,19 @@ gameResult MusicGame::game(int i){
 		
 	}
 	
-	Sleep(1000);
-	RESULT:
-		
-	putimage(0, 0, BG, COPY_PUT);
+	if(result.rank != -1){
 	
-	sprintf(tmp, "%d", result.perfect);
-	outtextxy(550, 300, tmp);
-	sprintf(tmp, "%d", result.great);
-	outtextxy(550, 400, tmp);
-	sprintf(tmp, "%d", result.good);
-	outtextxy(550, 500, tmp);
-	sprintf(tmp, "%d", result.bad);
-	outtextxy(550, 600, tmp);
-	sprintf(tmp, "%d", result.miss);
-	outtextxy(550, 700, tmp);
-	if(result.passed == 0){
-		outtextxy(200, 200, "FAILED");
+		float acc = result.perfect*12 + result.great*6 + result.good*3 + result.bad;
+		acc/=12;
+		acc/= result.perfect + result.great + result.good + result.bad + result.miss;
+		acc *= 100;
+		if(acc > 95) result.rank = 1;
+		else if(acc > 90) result.rank = 2;
+		else if(acc > 80) result.rank = 3;
+		else if(acc > 70) result.rank = 4;
+		else result.rank = 5;
+		cout << acc << endl; 
 	}
-	else{
-		sprintf(tmp, "%d", result.score);
-		outtextxy(200, 200, tmp);
-		
-	}
-	
-	
-	putimage(200, 300, judge[0][1], COPY_PUT);
-	putimage(200, 400, judge[1][1], COPY_PUT);
-	putimage(200, 500, judge[2][1], COPY_PUT);
-	putimage(200, 600, judge[3][1], COPY_PUT);
-	putimage(200, 700, judge[4][1], COPY_PUT);
-	
-	getch();
-
 	
 	
 	END:
@@ -441,6 +498,6 @@ gameResult MusicGame::game(int i){
 	free(pause_back);
 	mciSendString("stop mp3", NULL, 0, NULL);
 	mciSendString("close mp3", NULL, 0, NULL);
-	//return result;
+	return result;
 	
 }

@@ -24,17 +24,19 @@ int MusicGame::Getdir(string dir, vector<string> &files){
 
 
 MusicGame::MusicGame(){  //建構式，
+
+	readimagefile(".\\resources\\LOADING.jpg", 0, 0, 1440, 900);
+	setactivepage(1);
+
 	terminated = 0; //whether the game is end
 	gameMode = 4; //keys
 	speed = 2; //drop speed
 	columnWidth = 90;
 	columnPosition = 400;
-	offset = -70;
+	offset = -110;
 	cout << "start game" << endl;
 	
 //LOADING
-	sprintf(tmp, "LOADING");
-	outtextxy(700, 400, tmp);
 	
 //建構式
 	
@@ -115,7 +117,7 @@ int MusicGame::GameMain(){
 	while(terminated != 1){
 		int selected = selectScreen();
 		gameResult result = game(selected);
-		//Mug.resultScreen(result);	
+		resultScreen(result, selected);	
 	}
 	return 0;
 }

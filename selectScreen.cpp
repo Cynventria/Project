@@ -14,6 +14,9 @@ int MusicGame::selectScreen(){
 	int scrollGain = 0;
 	int on = -1;
 	int clicked = -1;
+	
+	readimagefile(".\\resources\\LOADING.jpg", 0, 0, 1440, 900);
+	setactivepage(1);
 
 	readimagefile( ".\\resources\\bg.jpg", 0, 0, 1440, 900);  //copy bg image to memory
 	void *bg = malloc(imagesize(0, 0, 1440, 900));
@@ -38,6 +41,12 @@ int MusicGame::selectScreen(){
 	readimagefile( ".\\resources\\PREV_BG_3.jpg", 0, 0, 1440, 900);  //subscreen of PV
 	void *PREVback = malloc(imagesize(0, 0, 1440, 900));
 	getimage(0, 0, 1440, 900, PREVback);
+	
+	readimagefile( ".\\resources\\START.jpg", 0, 0, 200, 100);  //subscreen of PV
+	void *START = malloc(imagesize(0, 0, 200, 100));
+	getimage(0, 0, 200, 100, START);
+	
+	
 	
 
 	cleardevice();
@@ -66,8 +75,8 @@ int MusicGame::selectScreen(){
 			
 			cout << "read image file: " << (songs[page+clicked].dir + songs[page+clicked].backGround) << endl;
 			
-			
-			pvInOut(1, cur_page, page+clicked, PREVback, songBG, frame);
+			readBeatmap(page+clicked);
+			pvInOut(1, cur_page, page+clicked, PREVback, songBG, frame, START);
 			
 		
 			char re[20];
@@ -89,10 +98,10 @@ int MusicGame::selectScreen(){
 						if(mousex() >700 && mousex() < 831 && mousey() > 375 && mousey() < 506){
 							break;
 						}
-						else if(mousex() > 1340 && mousey() > 800){
+						else if(mousex() > 1240 && mousey() > 800){
 							cout << "returned" << endl;
 							
-							readBeatmap(page+clicked);
+							//readBeatmap(page+clicked);
 							mciSendString("stop mp3", NULL, 0, NULL);
 							mciSendString("close mp3", NULL, 0, NULL);
 							
@@ -114,6 +123,7 @@ int MusicGame::selectScreen(){
 				
 				
 				//stop and close music
+				freeBeatmap(page+clicked);
 				mciSendString("stop mp3", NULL, 0, NULL);
 				mciSendString("close mp3", NULL, 0, NULL);
 
@@ -130,7 +140,7 @@ int MusicGame::selectScreen(){
 			}
 
 		
-		pvInOut(-1, cur_page, page+clicked, PREVback, songBG, frame);
+			pvInOut(-1, cur_page, page+clicked, PREVback, songBG, frame, START);
 			
 			free(frame);
 			free(songBG);
@@ -232,8 +242,9 @@ int MusicGame::selectScreen(){
 	
 }
 
-void MusicGame::pvInOut(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame){   //direction = 1 or -1
+void MusicGame::pvInOut(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame, void *START){   //direction = 1 or -1
 	
+	//if(direction > 0) readBeatmap(page+clicked);
 	for(int j = 0; j < 10; j++){
 		int i = 0;
 		if(direction > 0)	i = j+1;
@@ -252,13 +263,25 @@ void MusicGame::pvInOut(int direction, int cur_page, int index, void *PREVback, 
 		sprintf(tmp, songs[index].Artist.c_str());
 		settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
 		setusercharsize(1, 5, 5, 6);
-		outtextxy(1850-100*i, 400, tmp);
+		outtextxy(1850-100*i, 400, tmp);  //Artist
 		
 		sprintf(tmp, songs[index].Title.c_str());
 		settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
 		setusercharsize(1, 5, 1, 1);
-		outtextxy(1855-100*i, 425, tmp);
-			
+		outtextxy(1855-100*i, 425, tmp); //Title
+		
+		int itmp = songs[index].hitobjects.back().time -  songs[index].hitobjects[0].time;
+		sprintf(tmp, "Time : %d : %d", itmp/60000, (itmp%60000)/1000);
+		outtextxy(1750-100*i, 850, tmp);
+		
+		itmp = 1.0 * 1000 / songs[index].timingpoints[0].msPerBeat * 60;
+		sprintf(tmp, "BPM : %d", itmp);
+		outtextxy(1950-100*i, 850, tmp);
+		
+		
+		//outtextxy(2150-100*i, 850, "PLAY");
+		putimage(2240-100*i, 800, START, COPY_PUT);
+		
 		setbkcolor(BLACK);
 		setcolor(WHITE);
 			

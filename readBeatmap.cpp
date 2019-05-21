@@ -48,6 +48,12 @@ void MusicGame::readBeatmap(int i){
 	
 }
 
+void MusicGame::freeBeatmap(int i){
+	songs[i].timingpoints.clear();
+	songs[i].hitobjects.clear();
+	
+}
+
 HitObject::HitObject(string str){
 	x = 0;
 	y = 0;
@@ -87,6 +93,8 @@ HitObject::HitObject(string str){
 	type = atoi(val.c_str());
 	val = "";
 	p++;
+	
+	int t = type;
 	
 	while(str[p] != ','){val += str [p++];}
 	hitSound = atoi(val.c_str());
@@ -169,8 +177,8 @@ HitObject::HitObject(string str){
 		val = "";
 	}
 
-
-	//cout << x << ", " << y << ", " << time << ", " << type << ", " << hitSound << ", " << repeat << ", " << length << ", " << sampleSet<< ", " <<sliderType<< endl;
+	type = t;
+	cout << time << ", "<< type << ", "  << repeat << ", " << length <<  endl;
 }
 
 TimingPoint::TimingPoint(string str){

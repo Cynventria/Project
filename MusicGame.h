@@ -79,6 +79,7 @@ class gameResult{
 		int life;
 		int combo;
 		int maxcombo;	
+		int rank;
 };
 
 
@@ -100,13 +101,15 @@ class MusicGame{
 		
 		int selectScreen();  //methods
 		void readBeatmap(int);
+		void freeBeatmap(int);
 		//beatmap createBeatmap(originalBeatmap);
 		gameResult game(int);
+		void resultScreen(gameResult, int);
 		int pauseScreen(void*, void*);
 		
 		void resultScreen(song, gameResult);
 		
-		void pvInOut(int, int, int, void*, void*, void*);  //miscellaneous methods
+		void pvInOut(int, int, int, void*, void*, void*, void*);  //miscellaneous methods
 		int Getdir(string, vector<string> &);
 	public:
 		MusicGame();

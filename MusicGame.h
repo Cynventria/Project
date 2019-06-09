@@ -54,6 +54,7 @@ class song{
 		string Artist;
 		string ArtistUnicode;
 		string Version;
+		int BeatmapID;
 		string PreviewTime;
 		
 		float HPDrainRate;
@@ -80,6 +81,17 @@ class gameResult{
 		int combo;
 		int maxcombo;	
 		int rank;
+		float unstableRate;
+};
+
+class hobj{
+	public:
+		int time;
+		int length;
+		int err;
+		int enderr;
+		
+		hobj(int t, int l){ time = t;length = l;err=1000;enderr=1000;}
 };
 
 
@@ -104,12 +116,14 @@ class MusicGame{
 		void freeBeatmap(int);
 		//beatmap createBeatmap(originalBeatmap);
 		gameResult game(int);
+		gameResult TKgame(int);
 		void resultScreen(gameResult, int);
 		int pauseScreen(void*, void*);
 		
 		void resultScreen(song, gameResult);
 		
-		void pvInOut(int, int, int, void*, void*, void*, void*);  //miscellaneous methods
+		int pvScreen(int, int, int, void*, void*, void*, void*);  //miscellaneous methods
+		void configScreen(void*);
 		int Getdir(string, vector<string> &);
 	public:
 		MusicGame();

@@ -34,6 +34,8 @@ MusicGame::MusicGame(){  //建構式，
 	columnWidth = 90;
 	columnPosition = 400;
 	offset = -110;
+	char dfkeys[7] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M'};
+	char keys[7] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M'};
 	cout << "start game" << endl;
 	
 //LOADING
@@ -77,6 +79,9 @@ MusicGame::MusicGame(){  //建構式，
 			}
 			else if(str.find("Version:") == 0){
 				songs[i].Version = str.substr(8);
+			}
+			else if(str.find("BeatmapID:") == 0){
+    			songs[i].BeatmapID = atoi(str.substr(10).c_str());
 			}
 			else if(str.find("PreviewTime:") == 0){
     			songs[i].PreviewTime = str.substr(13);

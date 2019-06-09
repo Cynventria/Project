@@ -54,6 +54,7 @@ void MusicGame::freeBeatmap(int i){
 	
 }
 
+
 HitObject::HitObject(string str){
 	x = 0;
 	y = 0;
@@ -67,6 +68,7 @@ HitObject::HitObject(string str){
 	sliderType = 0;
 	endtime = 0;
 
+	int sit;
 	int p = 0;
 	int rec;
 	int ccon = 0;
@@ -104,7 +106,7 @@ HitObject::HitObject(string str){
 	
 	while(str[rec] != '\0'){
 		if(str[rec] == '|') {
-			type = 1;
+			sit = 1;
 			break;
 		}
 		
@@ -113,24 +115,34 @@ HitObject::HitObject(string str){
 		rec++; 
 	}
 	
-	if((type != 1) && (con == 0)){if(con == 0) type = 2;}
+		if((sit != 1) && (con == 0)){if(con == 0) sit = 2;}
 	
-	else if((type != 1) && (con == 5)) type = 3;
-	else type = 4;
+	else if((sit != 1) && (con == 5)) sit = 3;
+	else if(sit != 1)sit = 4;
 	
-	if(type == 1) {
+	//cout<<sit<<","<<con<<","<<ccon<<endl;
+	
+	if(sit == 1) {
+
 		if(str[p] == 'L') sliderType = 1;
 		else if (str[p] == 'P') sliderType = 2;
 		else if (str[p] == 'B') sliderType = 3;
+		
+		//cout<<"sliderType : "<<sliderType<<endl;
 		p+=2;
 		
-		while(str[p] != ',') {
+		//cout<<"str[p] : "<<str[p]<<endl;
+		while(1) {
 			int num;
-			while((str[p] != ':')&&(str[p] != '|') ){val += str [p++];}
+			while((str[p] != ':')&&(str[p] != '|')&&(str[p] != ',')){val += str [p++];}
+			
 			num = atoi(val.c_str());
 			sliderPoints.push_back(num);
+
 			val = "";
-			p++;
+			if(str[p] == ',') break;
+			//cout<<"num : "<<num<<endl;
+			p++;	
 		}
 		p++;
 		
@@ -154,14 +166,15 @@ HitObject::HitObject(string str){
 		sampleSet = atoi(val.c_str());
 		val = "";
 	}
+
 	
-	else if(type == 2){
+	else if(sit == 2){
 		while(str[p] != ','&&str[p] != '\0'){val += str [p++];}
 		endtime = atoi(val.c_str());
 		val = "";
 	}
 	
-	else if(type == 3) {
+	else if(sit == 3) {
 		while(str[p] != ':'){val += str [p++];}
 		endtime = atoi(val.c_str());
 		val = "";
@@ -171,14 +184,14 @@ HitObject::HitObject(string str){
 		val = "";
 	}
 	
-	else if(type == 4){
+	else if(sit == 4){
 		while(str[p] != ':'){val += str [p++];}
 		sampleSet = atoi(val.c_str());
 		val = "";
 	}
 
 	type = t;
-	cout << time << ", "<< type << ", "  << repeat << ", " << length <<  endl;
+	//cout << time << ", "<< type << ", "  << repeat << ", " << length <<  endl;
 }
 
 TimingPoint::TimingPoint(string str){

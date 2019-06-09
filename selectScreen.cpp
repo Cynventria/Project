@@ -46,11 +46,15 @@ int MusicGame::selectScreen(){
 	void *START = malloc(imagesize(0, 0, 200, 100));
 	getimage(0, 0, 200, 100, START);
 	
+	Sleep(200);
 	
 	
 
 	cleardevice();
+	
 	settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
+	
+	clearmouseclick(WM_LBUTTONDOWN);
 	
 	
 	while(1){
@@ -76,76 +80,22 @@ int MusicGame::selectScreen(){
 			cout << "read image file: " << (songs[page+clicked].dir + songs[page+clicked].backGround) << endl;
 			
 			readBeatmap(page+clicked);
-			pvInOut(1, cur_page, page+clicked, PREVback, songBG, frame, START);
-			
-		
-			char re[20];
-			
-			string mciCommand = "open \"" + songs[page+clicked].dir + songs[page+clicked].AudioFilename + "\" type mpegvideo alias mp3";
-			cout << "open mp3 " << songs[page+clicked].AudioFilename << endl;
-			mciSendString(mciCommand.c_str(), re, 20, NULL);
-			cout << "MCI return " << re << endl;
-			if(re[0] == '1'){
-				mciSendString(("seek mp3 to " + songs[page+clicked].PreviewTime).c_str(), NULL, 0, NULL);
-				mciSendString("play mp3", NULL, 0, NULL);
+			if(pvScreen(1, cur_page, page+clicked, PREVback, songBG, frame, START) ){
+				free(bg);
+				free(bar);
+				free(up);
+				free(down);
+				free(cantReadPNG);
+				free(PREVback);
 				
-				
-				
-				while(1){    //detect back button on PV screen
-					if(ismouseclick(WM_LBUTTONDOWN)){
-						clearmouseclick(WM_LBUTTONDOWN);
-						cout << "Left Pressed:" << mousex() << ", " << mousey() << endl;
-						if(mousex() >700 && mousex() < 831 && mousey() > 375 && mousey() < 506){
-							break;
-						}
-						else if(mousex() > 1240 && mousey() > 800){
-							cout << "returned" << endl;
-							
-							//readBeatmap(page+clicked);
-							mciSendString("stop mp3", NULL, 0, NULL);
-							mciSendString("close mp3", NULL, 0, NULL);
-							
-							
-
-							
-							free(bg);
-							free(bar);
-							free(up);
-							free(down);
-							free(cantReadPNG);
-							free(PREVback);
-
-							return page+clicked;
-						}
-					}
-					
-				}
-				
-				
-				//stop and close music
-				freeBeatmap(page+clicked);
-				mciSendString("stop mp3", NULL, 0, NULL);
-				mciSendString("close mp3", NULL, 0, NULL);
-
-				
-//resune to selection page
-				setactivepage(-cur_page+1);
+				return page+clicked;
 			}
 			else{
-				cout << "ERROR PLAYING MP3" << endl;
-				setactivepage(-cur_page+1);
-				//outtextxy(0, 0, "ERROR PLAYING MUSIC");
-				Sleep(500);
-				setactivepage(-cur_page+1);
+				free(frame);
+				free(songBG);
+				clicked = -1;
+				settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
 			}
-
-		
-			pvInOut(-1, cur_page, page+clicked, PREVback, songBG, frame, START);
-			
-			free(frame);
-			free(songBG);
-			clicked = -1;
-			settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
 		}
 		
 
@@ -182,9 +132,6 @@ int MusicGame::selectScreen(){
 		
 		
 		setvisualpage(cur_page);
-		//cout << "selection page refreshed" << endl;
-		
-		//cout << "cursor now on " << on%100 << endl;
 		
 //refresh end
 //detection start
@@ -196,12 +143,6 @@ int MusicGame::selectScreen(){
 	        int mx = mousex(), my = mousey();
 	        cout << "Left Pressed:" << mx << ", " << my << endl;
 			            
-	        /*if(mx>5 && mx<120 && my>5 && my<120){
-	           	if(page > 1) page--;
-			}
-			else if(mx>5 && mx<120 && my>735 && my<850){
-	           	if(page + 13 < songcount) page++;
-			}*/
 			for(int i = 0; i < 13; i++){
 				int x = 100+(13-i)*(i)*4;
 				int y = i*70 + 10;
@@ -242,13 +183,13 @@ int MusicGame::selectScreen(){
 	
 }
 
-void MusicGame::pvInOut(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame, void *START){   //direction = 1 or -1
+int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame, void *START){   //direction = 1 or -1
+	
 	
 	//if(direction > 0) readBeatmap(page+clicked);
 	for(int j = 0; j < 10; j++){
-		int i = 0;
-		if(direction > 0)	i = j+1;
-		else	i = 10-j;
+		int i = j+1;
+
 		cur_page = -cur_page+1;
 		setactivepage(cur_page);
 			
@@ -288,6 +229,132 @@ void MusicGame::pvInOut(int direction, int cur_page, int index, void *PREVback, 
 			
 		setvisualpage(cur_page);
 		Sleep(10);
+		
 	}
+	
+	
+	char re[20];
+	
+	string mciCommand = "open \"" + songs[index].dir + songs[index].AudioFilename + "\" type mpegvideo alias mp3";
+	cout << "open mp3 " << songs[index].AudioFilename << endl;
+	mciSendString(mciCommand.c_str(), re, 20, NULL);
+	cout << "MCI return " << re << endl;
+	
+	
+	
+	
+	if(re[0] == '1'){
+		mciSendString(("seek mp3 to " + songs[index].PreviewTime).c_str(), NULL, 0, NULL);
+		mciSendString("play mp3", NULL, 0, NULL);
+		
+		
+		
+		ifstream record(".\\data\\records");
+		int buf[10] = {0};
+		
+		record.read((char*)buf, 10);
+		if(buf[1] == songs[index].BeatmapID){
+			int key = 0x0710807;
+			for(int k = 0; k < 9; k++){
+				key += buf[k] ^ buf[k+1];
+				if(buf[k] & 1){
+					key = !key;
+				}
+			}
+			if(key == buf[9]){
+				
+			}
+		}
+		
+		int click = 0, lastc = 0;
+	
+		while(1){    //detect back button on PV screen
+			if(click == 1 && lastc == 0){
+
+
+				if(mousex() >700 && mousex() < 831 && mousey() > 375 && mousey() < 506){
+					
+					mciSendString("stop mp3", NULL, 0, NULL);
+					mciSendString("close mp3", NULL, 0, NULL);
+					break;
+				}
+				else if(mousex() > 1240 && mousey() > 800){
+					cout << "returned" << endl;
+					
+					//readBeatmap(page+clicked);
+					mciSendString("stop mp3", NULL, 0, NULL);
+					mciSendString("close mp3", NULL, 0, NULL);
+					
+			
+					return 1;
+				}
+			}
+			
+			Sleep(10);
+			lastc = click;
+			click = (int)(GetAsyncKeyState(0x01)!= 0);
+			clearmouseclick(WM_LBUTTONDOWN);
+		}
+		
+		
+	}
+	
+	
+	
+	
+	
+	for(int j = 0; j < 10; j++){
+		int i = 10-j;
+
+		cur_page = -cur_page+1;
+		setactivepage(cur_page);
+			
+		putimage(1000 - 100*i, 0, PREVback, COPY_PUT );
+			
+			
+		putimage(0, 0, frame, OR_PUT);
+		putimage( 1850 - 100*i, 30 ,songBG , COPY_PUT);
+			
+		setbkcolor(WHITE);
+		setcolor(CYAN);
+		sprintf(tmp, songs[index].Artist.c_str());
+		settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
+		setusercharsize(1, 5, 5, 6);
+		outtextxy(1850-100*i, 400, tmp);  //Artist
+		
+		sprintf(tmp, songs[index].Title.c_str());
+		settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
+		setusercharsize(1, 5, 1, 1);
+		outtextxy(1855-100*i, 425, tmp); //Title
+		
+		int itmp = songs[index].hitobjects.back().time -  songs[index].hitobjects[0].time;
+		sprintf(tmp, "Time : %d : %d", itmp/60000, (itmp%60000)/1000);
+		outtextxy(1750-100*i, 850, tmp);
+		
+		itmp = 1.0 * 1000 / songs[index].timingpoints[0].msPerBeat * 60;
+		sprintf(tmp, "BPM : %d", itmp);
+		outtextxy(1950-100*i, 850, tmp);
+		
+		
+		//outtextxy(2150-100*i, 850, "PLAY");
+		putimage(2240-100*i, 800, START, COPY_PUT);
+		
+		setbkcolor(BLACK);
+		setcolor(WHITE);
+			
+			
+		setvisualpage(cur_page);
+		Sleep(10);
+		
+	}
+	
+	return 0;
+	
+	
 }
+				
+				
+
+	
+	
 

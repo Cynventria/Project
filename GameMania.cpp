@@ -5,6 +5,7 @@
 #include <fstream>
 #include <Windows.h>
 #include <vector>
+#include <Math.h>
 #include "MusicGame.h"
 using namespace std;
 
@@ -98,7 +99,8 @@ gameResult MusicGame::game(int i){
 
 	
 	void *light = malloc(imagesize(0, 0, columnWidth, 500));
-	readimagefile(".\\resources\\light.jpg", 0, 0, columnWidth, 500);
+	if(mods % 4) readimagefile(".\\resources\\light-reverse.jpg", 0, 0, columnWidth, 500);
+	else readimagefile(".\\resources\\light.jpg", 0, 0, columnWidth, 500);
 	getimage(0, 0, columnWidth, 500, light);
 	
 	void *lights[4];
@@ -131,12 +133,58 @@ gameResult MusicGame::game(int i){
 	
 	
 	
-	
-	
 
 	//load resources;
-	//convert beatmap
+//convert beatmap
 	
+	vector< vector<hobj> > map(gameMode);
+	
+	for(int j = 0; j < songs[i].hitobjects.size(); j++){
+
+	
+		int each = 1;
+		
+		if(j != 0){
+			int xOffset = (songs[i].hitobjects[j].x - songs[i].hitobjects[j-1].x);
+			int yOffset = (songs[i].hitobjects[j].y - songs[i].hitobjects[j-1].y);
+			int timeOffset = (songs[i].hitobjects[j].time - songs[i].hitobjects[j-1].time);
+			if(timeOffset != 0) {
+				each = (xOffset*xOffset + yOffset*yOffset) / timeOffset;
+				if(each < 150) each = 1;
+				else if(each < 220) each = 2;
+				else if(each < 300) each = 3;
+				else each = 4;
+			}
+			
+		}
+		
+	
+	
+		int *Locas = (int*)malloc(sizeof(int)*each);
+		Locas[0] = (songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode;
+		
+		for(int k = 1; k < each; k++){
+			Locas[k] = (Locas[0] + (songs[i].hitobjects[j].y*songs[i].hitobjects[j].x)%gameMode)%gameMode;
+			for(int l = 0; l < k; l++){
+				if(Locas[l] == Locas[k]){
+					Locas[k] = (Locas[k]+1)%gameMode;
+					l--;
+				}
+			}
+		}
+		
+		for(int k = 0; k < each; k++){
+			map[Locas[k]].push_back( hobj(songs[i].hitobjects[j].time, songs[i].hitobjects[j].length * songs[i].hitobjects[j].repeat / (100.0*songs[i].SliderMultiplier) * songs[i].timingpoints[0].msPerBeat ) );
+			//cout << songs[i].hitobjects[j].time << endl;
+			//cout << map[k].back().time << endl;
+			//cout << map[k].back().length << endl;
+		}
+		
+		free(Locas);
+	}
+	
+//convert beatmap finished	
+
 //start music
 	char re[20];
 	string mciCommand = "open \"" + songs[i].dir + songs[i].AudioFilename + "\" type mpegvideo alias mp3";
@@ -221,26 +269,29 @@ gameResult MusicGame::game(int i){
 		
 
 //draw lines	
-		setcolor(WHITE);
-		for(int j = 0; j <= gameMode; j++){
-			line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
+
+		if(!(mods & 2)){
+			setcolor(WHITE);
+			for(int j = 0; j <= gameMode; j++){
+				line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
+			}
+			line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
+			
+			setfillstyle(1, WHITE);
 		}
-		line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
-		
-				setfillstyle(1, WHITE);
 				
 //draw light 
 		for(int j = 0; j < 4; j++){
 			if(keySig[j]==1){
 				bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
 			}
-			if(keySig[j] == 1 && lastkeySig[j] == 0){
+			if(keySig[j] != lastkeySig[j]){
 				PlaySound(".\\resources\\normal.wav", NULL, SND_FILENAME | SND_ASYNC);  
 			}
 		}
 		
 //judgement and print notes start
-//cout << "judgement and print notes start" << endl;
+
 		mciSendString("status mp3 position", re,20, 0);
 		position = atoi(re);
 		
@@ -251,79 +302,36 @@ gameResult MusicGame::game(int i){
 		 
 		
 		setfillstyle(1, WHITE);
-		//cout << lastkeySig[0]  << keySig[0] << lastkeySig[1]  << keySig[1] <<lastkeySig[2]  << keySig[2] <<lastkeySig[3]  << keySig[3] << endl;
-		
-		for(int j = 0; j < songs[i].hitobjects.size(); j++){
-			if(songs[i].hitobjects[j].hit == 0) continue;
-			int ato = songs[i].hitobjects[j].time - position;
-			if(ato > 2000) continue;
-			
-			int y = 800-speed*ato;
-			
-			int each = 1;
-			
-			if(j != 0){
-				int xOffset = (songs[i].hitobjects[j].x - songs[i].hitobjects[j-1].x);
-				int yOffset = (songs[i].hitobjects[j].y - songs[i].hitobjects[j-1].y);
-				int timeOffset = (songs[i].hitobjects[j].time - songs[i].hitobjects[j-1].time);
-				if(timeOffset != 0) {
-					each = (xOffset*xOffset + yOffset*yOffset) / timeOffset;
-					if(each < 150) each = 1;
-					else if(each < 220) each = 2;
-					else if(each < 300) each = 3;
-					else each = 4;
-				}
-				
-			}
-			//if(songs[i].hitobjects[j].hit == -1)songs[i].hitobjects[j].hit = (1<<(each)) -1;  //if number of multi key hasn't be calculated, set to full in binary
-			//minus to 0 means all keys have been hit
-//cout << "mk " << songs[i].hitobjects[j].hit << "with each " << each << endl; 
-			
-			int *Locas = (int*)malloc(sizeof(int)*each);
-			Locas[0] = (songs[i].hitobjects[j].x+songs[i].hitobjects[j].time)%gameMode;
-			for(int k = 1; k < each; k++){
-				Locas[k] = (Locas[0] + (songs[i].hitobjects[j].y*songs[i].hitobjects[j].x)%gameMode)%gameMode;
-				for(int l = 0; l < k; l++){
-					if(Locas[l] == Locas[k]){
-						Locas[k] = (Locas[k]+1)%gameMode;
-						l--;
-					}
-				}
-			}
-			
-			if(songs[i].hitobjects[j].hit == -1){
-				songs[i].hitobjects[j].hit = 0;
-				for(int k = 0; k < each; k++){
-					songs[i].hitobjects[j].hit += 1<<(Locas[k]);
-				}
-			}
-//cout << "multi-key cal finished" << endl;
-			for(int k = 0; k < each; k++){ 
-				int tmp = (1<<(Locas[k])) & songs[i].hitobjects[j].hit;
-				if( tmp == 0) continue;
-				if(keySig[Locas[k]] == 1 && lastkeySig[Locas[k]] == 0){  //detect positive edge
 
+			
+		for(int k = 0; k < gameMode; k++){
+			for(int j = 0; j < map[k].size(); j++){
+				if(map[k][j].err != 1000){
+					if(map[k][j].length == 0) continue;
+					else if(map[k][j].enderr != 1000) continue;
+				}
+				int ato = map[k][j].time - position;
+				int holdato = map[k][j].length + ato;
+				if(ato + map[k][j].length < -2000)	continue;
+				if(ato > 2000)	break;
 
-
+//positive edge
+				if(keySig[k] == 1 && lastkeySig[k] == 0){
 					if(ato < 150 && ato > -150){
-//cout << "detected key " << Locas[k] << " pressed" << endl;
-//cout << "active note in " << songs[i].hitobjects[j].time << endl;
-						songs[i].hitobjects[j].hit-= (1<<(Locas[k]));	
-//cout << "hit left " << 	songs[i].hitobjects[j].hit << endl;
-						
-						if(ato > 85 || ato < -85){
+						map[k][j].err =  ato;
+					
+						if(ato > 100 || ato < -100){
 							result.bad++;
-							result.life -= 35;
+							result.life -= 10;
 							result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
 							last = 3;
 						}
-						else if(ato > 60 || ato < -60){
+						else if(ato > 75 || ato < -75){
 							result.good++;
 							result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
 							last = 2;
 						}
-						
-						else if(ato > 40 || ato < -40){
+						else if(ato > 50 || ato < -50){
 							result.great++;
 							result.life += 5;
 							result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
@@ -339,47 +347,119 @@ gameResult MusicGame::game(int i){
 						}
 						result.combo++;
 						if(result.combo>result.maxcombo)result.maxcombo = result.combo;
-						lastkeySig[Locas[k]] = 1;
-cout << ato <<endl; 
-//cout << "key " << Locas[k] << " positive edge removed" << endl;
+						lastkeySig[k] = 1;
+					}
+					
+				}
+//keep pressing
+				else if(keySig[k] == 1 && lastkeySig[k] == 1){
+					
+				}
+//negetive edge
+				else if(keySig[k] == 0 && lastkeySig[k] == 1){
 
+					if(map[k][j].length != 0 && map[k][j].err != 1000){
+						
+						//int holdato = map[k][j].length + ato;
+						
+						//if(holdato < 150 || holdato > -150){
+							
+							if(holdato > 100 || holdato < -100){
+								result.bad++;
+								result.life -= 10;
+								result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
+								last = 3;
+							}
+							else if(holdato > 75 || holdato < -75){
+								result.good++;
+								result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
+								last = 2;
+							}
+							else if(holdato > 50 || holdato < -50){
+								result.great++;
+								result.life += 5;
+								result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
+								last = 1;
+							}
+							else {
+								result.perfect++;
+								result.life += 25;
+								if(result.life >= 1000) result.life = 1000;
+								result.score += 1200+1200.0*(result.combo*result.combo)/(5000*5000);
+								last = 0;
+								
+							}
+							result.combo++;
+							
+							cout << last << " " << holdato << endl;
+						//}
+						
+						if(holdato > 150){
+							map[k][j].enderr = ato;
+							last = 4;
+							result.miss++;
+							result.combo=0;
+							result.life -= 75;
+						}
 					}
 				}
 				
-//detect neg edge	
-				else if(keySig[Locas[k]] == 1 && lastkeySig[Locas[k]] == 1){
-					
-				}
 				
-//detect neg edge
-				else if(keySig[Locas[k]] == 0 && lastkeySig[Locas[k]] == 1){
-					
-				}
-
 				if(ato < -150){
-					songs[i].hitobjects[j].hit-=(1<<(Locas[k]));
+					if(map[k][j].err == 1000){
+						map[k][j].err = ato;
+						last = 4;
+						result.miss++;
+						result.combo=0;
+						result.life -= 75;
+					}
+				}
+				if(ato != holdato && holdato < -150 && map[k][j].err == 1000){
+					map[k][j].err = ato;
 					last = 4;
 					result.miss++;
 					result.combo=0;
 					result.life -= 75;
+					
 				}
 				
 				
+				int y = 800-speed*ato;
+				int x = columnPosition+k*columnWidth;
+				
+
+				if(mods & 8){  //FREE FALL
+					// g = (speed*speed / 400)
+					// t = (800/speed) -ato
+					y = 1/2 * (speed*speed / 400) * ((800/speed) -ato) * ((800/speed) -ato);
+				}
+				if(mods & 16){ //SHIVER
+					y+= 30 * sin(ato / 200  + map[k][j].time);
+				}
+				if(mods & 32){  //DYNAMIC
+					int dspeed = speed  + ( (map[k][j].time % 50) /50 )-1;
+					y = 800*dspeed*ato;
+				}
 				
 				
-				/*if(songs[i].hitobjects[j].type  != 1){
-					int duration = songs[i].hitobjects[j].length / (songs[i].SliderMultiplier*100) * songs[i].timingpoints[0].msPerBeat;
-					cout << "slider length " << duration <<endl;
-					cout << songs[i].hitobjects[j].type << endl;
-					bar(columnPosition+Locas[k]*columnWidth +20, y-20 - duration*speed, columnPosition+(Locas[k]+1)*columnWidth-20, y);
-				}*/
-				bar(columnPosition+Locas[k]*columnWidth , y-20, columnPosition+(Locas[k]+1)*columnWidth, y);
+				if(mods & 4){  //REVERSE
+					y = 900-y;
+					bar(x , y+20, x+columnWidth, y); //normal / head
+					bar(x+15 , y + (speed * map[k][j].length), x+columnWidth-15, y); //body
+					bar(x , y + (speed * map[k][j].length)+20 , x+columnWidth, y + (speed * map[k][j].length)); //tail
+				}
+				else{
+					bar(x , y-20, x+columnWidth, y); //normal / head
+					bar(x+15 , y - (speed * map[k][j].length), x+columnWidth-15, y); //body
+					bar(x , y - (speed * map[k][j].length)-20 , x+columnWidth, y - (speed * map[k][j].length)); //tail
+				}
 			}
-			free(Locas);
-			
-			
 		}
-//cout << "judge finished" <<endl; 
+		
+		
+		
+		
+//judge finished and print notes finished
 
 //put judgement image front
 		if(t != -1){
@@ -396,8 +476,10 @@ cout << ato <<endl;
 
 		if(result.life < 0){
 			cout << "failed" << endl;
+			result.life = 0;
 			result.passed = 0;
-			goto END;
+			if(!(mods & 1))
+				goto END;
 		}
 		else if(result.life > 1000){
 			result.life = 1000;
@@ -484,8 +566,7 @@ cout << ato <<endl;
 	
 	
 	END:
-	songs[i].timingpoints.clear();
-	songs[i].hitobjects.clear();
+	freeBeatmap(i);
 	free(BG);
 	for(int j = 0; j < 10; j++){
 		free(N[j]);

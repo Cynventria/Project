@@ -15,7 +15,9 @@ int MusicGame::selectScreen(){
 	int on = -1;
 	int clicked = -1;
 	
+	setactivepage(0);
 	readimagefile(".\\resources\\LOADING.jpg", 0, 0, 1440, 900);
+	setvisualpage(0);
 	setactivepage(1);
 
 	readimagefile( ".\\resources\\bg.jpg", 0, 0, 1440, 900);  //copy bg image to memory
@@ -135,6 +137,23 @@ int MusicGame::selectScreen(){
 		
 //refresh end
 //detection start
+
+//config page
+		if(GetAsyncKeyState(0x20)!=0){  //SPACEBAR
+			void *frame = malloc(imagesize(0, 0, 1440, 900));
+			getimage(0, 0, 1440, 900, frame);
+			configScreen(1, frame);
+			clearmouseclick(WM_LBUTTONDOWN);
+			free(frame);
+			GetAsyncKeyState(0x20); //prevent re-detecting
+			setbkcolor(BLACK);
+			setcolor(WHITE);
+			settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
+		}
+
+
+
+
 		
 		on = -1;   //init cursor on
 		
@@ -185,7 +204,7 @@ int MusicGame::selectScreen(){
 
 int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame, void *START){   //direction = 1 or -1
 	
-	
+	clearmouseclick(WM_LBUTTONDOWN);
 	//if(direction > 0) readBeatmap(page+clicked);
 	for(int j = 0; j < 10; j++){
 		int i = j+1;
@@ -262,7 +281,7 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 				}
 			}
 			if(key == buf[9]){
-				
+				cout << buf[0] << buf[1] << buf[2];
 			}
 		}
 		
@@ -289,11 +308,21 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 					return 1;
 				}
 			}
+//MOD config page
+			if(GetAsyncKeyState(0x20)!=0){  //SPACEBAR
+				void *Cframe = malloc(imagesize(0, 0, 1440, 900));
+				getimage(0, 0, 1440, 900, Cframe);
+				ModconfigScreen(Cframe);
+				clearmouseclick(WM_LBUTTONDOWN);
+				//free(Cframe);
+				GetAsyncKeyState(0x20);  //prevent re-detecting
+			}			
 			
 			Sleep(10);
 			lastc = click;
-			click = (int)(GetAsyncKeyState(0x01)!= 0);
+			click = (int)ismouseclick(WM_LBUTTONDOWN);
 			clearmouseclick(WM_LBUTTONDOWN);
+			
 		}
 		
 		

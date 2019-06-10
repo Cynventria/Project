@@ -204,6 +204,8 @@ gameResult MusicGame::game(int i){
 	result.passed = 1;
 	int last = -1;
 	int esc = 0;  //pause key
+	long long sum = 0,  sumsq = 0;
+	int item = 0;
 	
 	
 	/*for(int j = 0; j < songs[i].hitobjects.size(); j++){
@@ -232,8 +234,9 @@ gameResult MusicGame::game(int i){
 		//sprintf(tmp, "%dx", result.combo);
 		//outtextxy(columnPosition+150, 200, tmp);
 		int t = 100000;
-		
-		for(int j = 6; j > 0; j--){
+
+//print combo
+		for(int j = 6; j > 0; j--){ 
 			if(result.combo % t != result.combo){
 				int t2 = j;
 				t*=10;
@@ -252,10 +255,14 @@ gameResult MusicGame::game(int i){
 			t*=10;
 		}
 		
-		setcolor(CYAN);
-		arc(columnPosition+columnWidth*gameMode/2, 232, 90, result.life*360/1000+90, 110);//life
-		setcolor(WHITE);
-		
+//draw life
+		if(result.life > 0){
+			setcolor(CYAN);
+			arc(columnPosition+columnWidth*gameMode/2, 232, 90, result.life*360/1000+90, 110);//life
+			setcolor(WHITE);
+		}
+	
+//draw light	
 		for(int k = 0;  k< gameMode ; k++){
 			if(keySig[k]){
 				putimage(columnPosition+(columnWidth*k), 400, light, COPY_PUT);
@@ -269,23 +276,24 @@ gameResult MusicGame::game(int i){
 		
 
 //draw lines	
-
+		setcolor(WHITE);
 		if(!(mods & 2)){
-			setcolor(WHITE);
 			for(int j = 0; j <= gameMode; j++){
 				line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
 			}
-			line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
-			
-			setfillstyle(1, WHITE);
+			if(mods & 4) line(columnPosition, 100, columnPosition+gameMode*columnWidth, 100);
+			else line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
 		}
+		
+		setfillstyle(1, WHITE);
+
 				
-//draw light 
+//play eff sound
 		for(int j = 0; j < 4; j++){
 			if(keySig[j]==1){
 				bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
 			}
-			if(keySig[j] != lastkeySig[j]){
+			if(keySig[j] ==1 &&  lastkeySig[j] == 0){
 				PlaySound(".\\resources\\normal.wav", NULL, SND_FILENAME | SND_ASYNC);  
 			}
 		}
@@ -358,41 +366,44 @@ gameResult MusicGame::game(int i){
 //negetive edge
 				else if(keySig[k] == 0 && lastkeySig[k] == 1){
 
-					if(map[k][j].length != 0 && map[k][j].err != 1000){
+					if(map[k][j].length != 0 && map[k][j].err != 1000 && map[k][j].enderr == 1000){
 						
-						//int holdato = map[k][j].length + ato;
-						
-						//if(holdato < 150 || holdato > -150){
-							
-							if(holdato > 100 || holdato < -100){
-								result.bad++;
-								result.life -= 10;
-								result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
-								last = 3;
-							}
-							else if(holdato > 75 || holdato < -75){
-								result.good++;
-								result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
-								last = 2;
-							}
-							else if(holdato > 50 || holdato < -50){
-								result.great++;
-								result.life += 5;
-								result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
-								last = 1;
-							}
-							else {
-								result.perfect++;
-								result.life += 25;
-								if(result.life >= 1000) result.life = 1000;
-								result.score += 1200+1200.0*(result.combo*result.combo)/(5000*5000);
-								last = 0;
-								
-							}
+						if(holdato > 100 || holdato < -100){
+							result.bad++;
+							result.life -= 10;
+							result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
+							last = 3;
 							result.combo++;
+							map[k][j].enderr = ato;
+						}
+						else if(holdato > 75 || holdato < -75){
+							result.good++;
+							result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
+							last = 2;
+							result.combo++;
+							map[k][j].enderr = ato;
+						}
+						else if(holdato > 50 || holdato < -50){
+							result.great++;
+							result.life += 5;
+							result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
+							last = 1;
+							result.combo++;
+							map[k][j].enderr = ato;
+						}
+						else {
+							result.perfect++;
+							result.life += 25;
+							if(result.life >= 1000) result.life = 1000;
+							result.score += 1200+1200.0*(result.combo*result.combo)/(5000*5000);
+							last = 0;
+							result.combo++;
+							map[k][j].enderr = ato;
 							
-							cout << last << " " << holdato << endl;
-						//}
+						}
+
+						PlaySound(".\\resources\\normal.wav", NULL, SND_FILENAME | SND_ASYNC);  
+						
 						
 						if(holdato > 150){
 							map[k][j].enderr = ato;
@@ -427,19 +438,37 @@ gameResult MusicGame::game(int i){
 				int y = 800-speed*ato;
 				int x = columnPosition+k*columnWidth;
 				
-
+				if(mods & 32){  //DYNAMIC
+					float dspeed = speed  + ( 1.0*((map[k][j].time*k) % 50) /50 )-1;
+					y = 800 - dspeed*ato;
+				}
+				
 				if(mods & 8){  //FREE FALL
-					// g = (speed*speed / 400)
-					// t = (800/speed) -ato
-					y = 1/2 * (speed*speed / 400) * ((800/speed) -ato) * ((800/speed) -ato);
+				
+					if(mods & 32){
+						float dspeed = speed  + ( 1.0*((map[k][j].time*k) % 50) /50 )-1;
+						float g = (dspeed*dspeed / 400);
+						int t = ((800/dspeed) - ato);
+						
+						y =  0.5 * g * t * t;
+						if(ato > (800/dspeed)){
+							y = -y;
+						}
+					}
+					else{
+						float g = (speed*speed / 400);
+						int t = ((800/speed) - ato);
+					
+						y =  0.5 * g * t * t;
+						if(ato > (800/speed)){
+							y = -y;
+						}
+					}
 				}
 				if(mods & 16){ //SHIVER
-					y+= 30 * sin(ato / 200  + map[k][j].time);
+					x+= 30 * sin(1.0* ato / (map[k][j].time % 50)  + map[k][j].time);
 				}
-				if(mods & 32){  //DYNAMIC
-					int dspeed = speed  + ( (map[k][j].time % 50) /50 )-1;
-					y = 800*dspeed*ato;
-				}
+
 				
 				
 				if(mods & 4){  //REVERSE
@@ -448,6 +477,7 @@ gameResult MusicGame::game(int i){
 					bar(x+15 , y + (speed * map[k][j].length), x+columnWidth-15, y); //body
 					bar(x , y + (speed * map[k][j].length)+20 , x+columnWidth, y + (speed * map[k][j].length)); //tail
 				}
+				
 				else{
 					bar(x , y-20, x+columnWidth, y); //normal / head
 					bar(x+15 , y - (speed * map[k][j].length), x+columnWidth-15, y); //body
@@ -474,12 +504,12 @@ gameResult MusicGame::game(int i){
 
 		setvisualpage(cur_page);
 
-		if(result.life < 0){
-			cout << "failed" << endl;
+		if(result.life <= 0){
 			result.life = 0;
-			result.passed = 0;
-			if(!(mods & 1))
+			if(!(mods & 1)){
+				result.passed = 0;
 				goto END;
+			}
 		}
 		else if(result.life > 1000){
 			result.life = 1000;
@@ -487,8 +517,14 @@ gameResult MusicGame::game(int i){
 		//cout << result.life << endl;
 		
 
+		for(int j = 0; j < gameMode; j++){
+			lastkeySig[j] = keySig[j];
+			if(GetAsyncKeyState(keys[j])!=0) keySig[j]=1;
+       			else keySig[j]=0;
+		}
 		
-		lastkeySig[0] = keySig[0];
+		
+		/*lastkeySig[0] = keySig[0];
 		lastkeySig[1] = keySig[1];
 		lastkeySig[2] = keySig[2];
 		lastkeySig[3] = keySig[3];
@@ -502,7 +538,7 @@ gameResult MusicGame::game(int i){
         if(GetAsyncKeyState(N_KEY)!=0) keySig[2]=1;
         else keySig[2]=0;
         if(GetAsyncKeyState(M_KEY)!=0) keySig[3]=1;
-        else keySig[3]=0;
+        else keySig[3]=0;*/
         
       
 	  
@@ -550,6 +586,7 @@ gameResult MusicGame::game(int i){
 		
 	}
 	
+//caculate result and accuaracy 
 	if(result.rank != -1){
 	
 		float acc = result.perfect*12 + result.great*6 + result.good*3 + result.bad;
@@ -563,6 +600,27 @@ gameResult MusicGame::game(int i){
 		else result.rank = 5;
 		cout << acc << endl; 
 	}
+	
+//caculate unstable rate;
+
+	for(int k = 0; k < gameMode; k++){
+		for(int j = 0; j < map[j].size(); j++){
+			if(map[k][j].err >= -150 && map[k][j].err <= 150){
+				sum += map[k][j].err;
+				sumsq += map[k][j].err * map[k][j].err;
+				item++;
+				if(map[k][j].length != 0){
+					if(map[k][j].err <= 150 && map[k][j].err >= -150){
+						sum += map[k][j].err;
+						sumsq += map[k][j].err * map[k][j].err;
+						item++;
+					}
+				}
+			}
+		}
+	}
+	result.unstableRate = pow(sumsq/item -  pow((sum/item), 2), 0.5);
+	result.error = sum/item;
 	
 	
 	END:

@@ -81,6 +81,7 @@ class gameResult{
 		int combo;
 		int maxcombo;	
 		int rank;
+		int error;
 		float unstableRate;
 };
 
@@ -114,7 +115,7 @@ class MusicGame{
 		int selectScreen();  //methods
 		void readBeatmap(int);
 		void freeBeatmap(int);
-		//beatmap createBeatmap(originalBeatmap);
+		//beatmap createBeatmap(originalBeatmap);  //inside game(int);
 		gameResult game(int);
 		gameResult TKgame(int);
 		void resultScreen(gameResult, int);
@@ -123,7 +124,10 @@ class MusicGame{
 		void resultScreen(song, gameResult);
 		
 		int pvScreen(int, int, int, void*, void*, void*, void*);  //miscellaneous methods
-		void configScreen(void*);
+		void configScreen(int, void*);
+		void KeyconfigScreen(void*);
+		void ModconfigScreen(void *);
+		void saveConfig();
 		int Getdir(string, vector<string> &);
 	public:
 		MusicGame();

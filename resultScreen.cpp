@@ -101,6 +101,8 @@ void MusicGame::resultScreen(gameResult r, int i){
 		}
 		file.write((char *)data, 40);
 		
+		cout << "error = " << r.error << endl << "unstable rate=" << r.unstableRate << endl;
+		
 		//file << songs[i].BeatmapID;
 		file.close();
 		

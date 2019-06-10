@@ -33,9 +33,53 @@ MusicGame::MusicGame(){  //«Øºc¦¡¡A
 	speed = 2; //drop speed
 	columnWidth = 90;
 	columnPosition = 400;
-	offset = -110;
-	char dfkeys[7] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M'};
-	char keys[7] = {'Z', 'X', 'C', 'V', 'B', 'N', 'M'};
+	offset = 0;
+	mods = 0;
+	
+	keys[0] = 'Z';
+	keys[1] = 'X';
+	keys[2] = 'C';
+	keys[3] = 'V';
+	keys[4] = 'B';
+	keys[5] = 'N';
+	keys[6] = 'M';
+	
+	
+	
+	string str;
+	ifstream conf(".\\data\\congif");
+	while(getline(conf, str)){
+		if(str.find("gameMode=") == 0){
+			int gm = atoi(str.substr(9).c_str());
+			if(gm <= 7 && gm >= 3)  gameMode = gm;
+		}
+		else if(str.find("speed=") == 0){
+			int sp = 1.0 * atoi(str.substr(6).c_str()) / 10;
+			if(sp > 0) speed = sp;
+		}
+		else if(str.find("offset=") == 0){
+			offset = atoi(str.substr(7).c_str());
+		}
+		else if(str.find("columnWidth=") == 0){
+			int cw = atoi(str.substr(12).c_str());
+			if(cw > 0) columnWidth = cw;
+		}
+		else if(str.find("columnPosition=") == 0){
+			int cp = atoi(str.substr(15).c_str());
+			if(cp > 0) columnPosition = cp;
+		}
+		else if(str.find("keys=") == 0){
+			//sscanf(str.substr(5).c_str(), "%d %d %d %d %d %d %d", keys, keys+1, keys+2, keys+3, keys+4, keys+5, keys+6);
+		}
+	}
+	
+	conf.close();
+	
+	saveConfig();
+	
+		
+		
+	
 	cout << "start game" << endl;
 	
 //LOADING

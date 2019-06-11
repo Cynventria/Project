@@ -268,22 +268,40 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 		
 		
 		
-		ifstream record(".\\data\\records");
-		int buf[10] = {0};
+		ifstream record(".\\data\\records", ios::in | ios::binary);
+		int buf2[10] = {0};
+		char buf[40] = {0};
 		
-		record.read((char*)buf, 10);
-		if(buf[1] == songs[index].BeatmapID){
-			int key = 0x0710807;
-			for(int k = 0; k < 9; k++){
-				key += buf[k] ^ buf[k+1];
-				if(buf[k] & 1){
-					key = !key;
+		if(record){
+
+		
+			while(!record.eof()){
+				for(int j = 0; j < 40; j++){
+					record.get(buf[j]);
+				}
+				memcpy(buf2, buf, 40);
+				
+
+				if(buf2[0] == songs[index].BeatmapID){
+					//cout << "found record" << endl;
+					int key = buf2[9];
+					buf2[9] = 0x0710807;
+					for(int k = 0; k < 9; k++){
+						buf2[9] += buf2[k] ^ !buf2[k+1];
+						buf2[9] = buf2[9] << 2;
+
+					}
+					cout <<"key"<< key << "data" << buf2[9] << endl;
+					if(key == buf2[9]){
+						cout << "found record" << endl;
+						cout << buf[0] << buf[1] << buf[2];
+					}
 				}
 			}
-			if(key == buf[9]){
-				cout << buf[0] << buf[1] << buf[2];
-			}
+			
 		}
+		
+		record.close();
 		
 		int click = 0, lastc = 0;
 	
@@ -314,7 +332,7 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 				getimage(0, 0, 1440, 900, Cframe);
 				ModconfigScreen(Cframe);
 				clearmouseclick(WM_LBUTTONDOWN);
-				//free(Cframe);
+				free(Cframe);
 				GetAsyncKeyState(0x20);  //prevent re-detecting
 			}			
 			

@@ -332,7 +332,7 @@ void MusicGame::KeyconfigScreen(void *frame){
 
 
 void MusicGame::saveConfig(){
-	ofstream conf(".\\data\\congif");
+	ofstream conf(".\\data\\config");
 	conf << "gameMode=" << gameMode << endl;
 	conf << "speed="  << (int)(speed*10) << endl;
 	conf << "offset=" << offset << endl;

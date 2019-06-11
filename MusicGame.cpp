@@ -47,7 +47,7 @@ MusicGame::MusicGame(){  //«Øºc¦¡¡A
 	
 	
 	string str;
-	ifstream conf(".\\data\\congif");
+	ifstream conf(".\\data\\config");
 	while(getline(conf, str)){
 		if(str.find("gameMode=") == 0){
 			int gm = atoi(str.substr(9).c_str());

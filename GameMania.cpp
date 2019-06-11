@@ -524,21 +524,6 @@ gameResult MusicGame::game(int i){
 		}
 		
 		
-		/*lastkeySig[0] = keySig[0];
-		lastkeySig[1] = keySig[1];
-		lastkeySig[2] = keySig[2];
-		lastkeySig[3] = keySig[3];
-		
-        
-        
-        if(GetAsyncKeyState(Z_KEY)!=0) keySig[0]=1;
-        else keySig[0]=0;
-        if(GetAsyncKeyState(X_KEY)!=0) keySig[1]=1;
-        else keySig[1]=0;
-        if(GetAsyncKeyState(N_KEY)!=0) keySig[2]=1;
-        else keySig[2]=0;
-        if(GetAsyncKeyState(M_KEY)!=0) keySig[3]=1;
-        else keySig[3]=0;*/
         
       
 	  

@@ -35,6 +35,8 @@ MusicGame::MusicGame(){  //«Øºc¦¡¡A
 	columnPosition = 400;
 	offset = 0;
 	mods = 0;
+	sudden = 0;
+	lift = 0;
 	
 	keys[0] = 'Z';
 	keys[1] = 'X';

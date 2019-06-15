@@ -107,7 +107,9 @@ class MusicGame{
 		int mods;
 		int columnWidth;
 		int columnPosition;
-		int skin;
+		int sudden;
+		int lift;
+		//int skin;
 		
 		int terminated;
 		char tmp[150];
@@ -126,7 +128,9 @@ class MusicGame{
 		int pvScreen(int, int, int, void*, void*, void*, void*);  //miscellaneous methods
 		void configScreen(int, void*);
 		void KeyconfigScreen(void*);
-		void ModconfigScreen(void *);
+		void ModconfigScreen(void*);
+		void PositionconfigScreen(void*);
+		void OffsetTool();
 		void saveConfig();
 		int Getdir(string, vector<string> &);
 	public:

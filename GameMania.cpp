@@ -99,11 +99,11 @@ gameResult MusicGame::game(int i){
 
 	
 	void *light = malloc(imagesize(0, 0, columnWidth, 500));
-	if(mods % 4) readimagefile(".\\resources\\light-reverse.jpg", 0, 0, columnWidth, 500);
+	if(mods & 4) readimagefile(".\\resources\\light-reverse.jpg", 0, 0, columnWidth, 500);
 	else readimagefile(".\\resources\\light.jpg", 0, 0, columnWidth, 500);
 	getimage(0, 0, columnWidth, 500, light);
 	
-	void *lights[4];
+	/*void *lights[4];
 	lights[0] = malloc(imagesize(0, 0, columnWidth, 500));
 	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
 	getimage(0, 0, columnWidth, 500, lights[0]);
@@ -115,7 +115,7 @@ gameResult MusicGame::game(int i){
 	getimage(0, 0, columnWidth, 500, lights[2]);
 	lights[3] = malloc(imagesize(0, 0, columnWidth, 500));
 	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
-	getimage(0, 0, columnWidth, 500, lights[3]);
+	getimage(0, 0, columnWidth, 500, lights[3]);*/
 	
 	
 	
@@ -202,6 +202,7 @@ gameResult MusicGame::game(int i){
 	
 	result.life = 1000;
 	result.passed = 1;
+	float dspeed = speed;
 	int last = -1;
 	int esc = 0;  //pause key
 	long long sum = 0,  sumsq = 0;
@@ -265,8 +266,10 @@ gameResult MusicGame::game(int i){
 //draw light	
 		for(int k = 0;  k< gameMode ; k++){
 			if(keySig[k]){
-				putimage(columnPosition+(columnWidth*k), 400, light, COPY_PUT);
+				if(mods & 4) putimage(columnPosition+(columnWidth*k), 0, light, COPY_PUT);
+				 else putimage(columnPosition+(columnWidth*k), 400, light, COPY_PUT);
 			}
+			
 		}
 //put judgement image back
 		t = last;
@@ -291,7 +294,8 @@ gameResult MusicGame::game(int i){
 //play eff sound
 		for(int j = 0; j < 4; j++){
 			if(keySig[j]==1){
-				bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
+				if(mods & 4) bar(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*(j+1), 100);
+				else bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
 			}
 			if(keySig[j] ==1 &&  lastkeySig[j] == 0){
 				PlaySound(".\\resources\\normal.wav", NULL, SND_FILENAME | SND_ASYNC);  
@@ -439,14 +443,14 @@ gameResult MusicGame::game(int i){
 				int x = columnPosition+k*columnWidth;
 				
 				if(mods & 32){  //DYNAMIC
-					float dspeed = speed  + ( 1.0*((map[k][j].time*k) % 50) /50 )-1;
+					dspeed = speed  + ( 1.0*((map[k][j].time*k) % 50) /50 )-1;
 					y = 800 - dspeed*ato;
 				}
 				
 				if(mods & 8){  //FREE FALL
 				
 					if(mods & 32){
-						float dspeed = speed  + ( 1.0*((map[k][j].time*k) % 50) /50 )-1;
+						dspeed = speed  + ( 1.0*((map[k][j].time*k) % 50) /50 )-1;
 						float g = (dspeed*dspeed / 400);
 						int t = ((800/dspeed) - ato);
 						
@@ -473,18 +477,22 @@ gameResult MusicGame::game(int i){
 				
 				if(mods & 4){  //REVERSE
 					y = 900-y;
+					
 					bar(x , y+20, x+columnWidth, y); //normal / head
-					bar(x+15 , y + (speed * map[k][j].length), x+columnWidth-15, y); //body
-					bar(x , y + (speed * map[k][j].length)+20 , x+columnWidth, y + (speed * map[k][j].length)); //tail
+					bar(x+15 , y + (dspeed * map[k][j].length), x+columnWidth-15, y); //body
+					bar(x , y + (dspeed * map[k][j].length)+20 , x+columnWidth, y + (dspeed * map[k][j].length)); //tail
 				}
 				
 				else{
 					bar(x , y-20, x+columnWidth, y); //normal / head
-					bar(x+15 , y - (speed * map[k][j].length), x+columnWidth-15, y); //body
-					bar(x , y - (speed * map[k][j].length)-20 , x+columnWidth, y - (speed * map[k][j].length)); //tail
+					bar(x+15 , y - (dspeed * map[k][j].length), x+columnWidth-15, y); //body
+					bar(x , y - (dspeed * map[k][j].length)-20 , x+columnWidth, y - (dspeed * map[k][j].length)); //tail
 				}
 			}
 		}
+		
+		
+		
 		
 		
 		

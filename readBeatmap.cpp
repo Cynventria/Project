@@ -15,6 +15,10 @@ void MusicGame::readBeatmap(int i){
 	
 	ifstream ifs(songs[i].path.c_str());
 	
+	if(!ifs){
+		cout << "cannot read file" << endl;
+	}
+	
 	cout << "file read" << endl;
 	
 	string str;
@@ -40,7 +44,7 @@ void MusicGame::readBeatmap(int i){
 	ifs.close();
 	
 	
-	
+	cout << "file read finished" << endl;
 	//for(int j = 0; j < songs[i].hitobjects.size(); j++){
 		//cout << /*songs[i].hitobjects[j].x << ", " << songs[i].hitobjects[j].y << ", " << songs[i].hitobjects[j].time << */endl;
 	//} 

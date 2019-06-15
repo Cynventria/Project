@@ -11,6 +11,9 @@ using namespace std;
 
 void MusicGame::configScreen(int page, void *frame){
 	GetAsyncKeyState(0x01); //prevent re-detect
+	
+	settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
+	setusercharsize(1, 1, 2, 1);
 	int on = 0;
 	int curpage = 0;
 	setactivepage(0);
@@ -67,7 +70,7 @@ void MusicGame::configScreen(int page, void *frame){
 			on = 2;
 			
 			if(click == 1 && lastclick == 0){
-				
+				PositionconfigScreen(frame);
 			}
 			
 		}
@@ -98,6 +101,9 @@ void MusicGame::configScreen(int page, void *frame){
 				else if(mx > 640 && mx < 670){
 					offset ++;
 				}
+				else if(mx > 525 && mx < 620){
+					OffsetTool();
+				}
 			}
 		}
 		
@@ -110,8 +116,8 @@ void MusicGame::configScreen(int page, void *frame){
 		
 		setbkcolor(BLACK);
 		setcolor(WHITE);
-		settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
-		setusercharsize(1, 1, 2, 1);
+		//settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
+		//setusercharsize(1, 1, 2, 1);
 		
 		sprintf(tmp, "%d", gameMode);
 		outtextxy(90, 800, tmp);
@@ -154,7 +160,162 @@ void MusicGame::configScreen(int page, void *frame){
 
 	
 }
+void MusicGame::PositionconfigScreen(void *frame){
+	setactivepage(0);
+	putimage(0, 0, frame, COPY_PUT);
+	
+	settextstyle(GOTHIC_FONT, HORIZ_DIR, 0);
+	setusercharsize(1, 1, 2, 1);
+	
+	setvisualpage(0);
+	setactivepage(1);
+	
+	void *Pconfig = malloc(imagesize(0, 0, 1440, 200));
+	readimagefile(".\\resources\\config-4.jpg", 0, 700, 1440, 900);
+	getimage(0, 700, 1440, 900, Pconfig);
+	
+	readimagefile( ".\\resources\\bg.jpg", 0, 0, 1440, 900);
+	void *bg = malloc(imagesize(0, 0, 1440, 900));
+	getimage(0, 0, 1440, 900, bg);
+	
+	void *preview = malloc(imagesize(0, 0, 1440, 900));
+	
+	int curpage;
+	int mx, my;
+	int out = 1;
+	
+	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
+	putimage(0, 0, bg, COPY_PUT);
+	
+	
+	while(1){
+		GetAsyncKeyState(0x20);
+		Sleep(10);
+		
+		curpage = (curpage+1) % 2;
+		setactivepage(curpage);
+			
+		putimage(0, 0, bg, COPY_PUT);
+		
+		setfillstyle(1, BLACK);
+		bar(columnPosition, 0, columnPosition+columnWidth*gameMode, 900);
+		
+		setfillstyle(3, WHITE);
+		bar(columnPosition, 0, columnPosition+columnWidth*gameMode, sudden);
+		bar(columnPosition, 800-lift, columnPosition+columnWidth*gameMode, 800);
+		
+		setcolor(CYAN);
+		arc(columnPosition+columnWidth*gameMode/2, 232, 90, 90, 110);
+		setcolor(WHITE);
+		
+		for(int j = 0; j <= gameMode; j++){
+			line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
+		}
+		line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
+		
+		getimage(0, 0, 1440, 900, preview);
+		
+		if(out){
+			cleardevice();
+			putimage(0, -200, preview, COPY_PUT);
+			setbkcolor(BLACK);
+			setcolor(WHITE);
+			
+			sprintf(tmp, "%d", columnWidth);
+			outtextxy(80, 810, tmp);
+			
+			sprintf(tmp, "%d", columnPosition);
+			outtextxy(350, 810, tmp);
+			
+			sprintf(tmp, "%d", sudden);
+			outtextxy(1300, 720, tmp);
+			
+			sprintf(tmp, "%d", lift);
+			outtextxy(1300, 820, tmp);
+			
+			putimage(0, 700, Pconfig, OR_PUT);
+		}
+		
+		setvisualpage(curpage);
+		
+		
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			clearmouseclick(WM_LBUTTONDOWN);
+			mx = mousex();
+			my = mousey();
+			
+			if(out){
+				if(mx > 20 && mx < 40 && my > 830 && my < 850){
+					if(columnWidth > 10)
+						columnWidth-=10;
+				}
+				else if(mx > 210 && mx < 230 && my > 830 && my < 850){
+					if(columnWidth < (1440/4))
+						columnWidth+=10;
+				}
+				else if(mx > 290 && mx < 310 && my > 830 && my < 850){
+					if(columnPosition > 0)
+						columnPosition-=10;
+				}
+				else if(mx > 500 && mx < 520 && my > 830 && my < 850){
+					if(columnPosition < 1440)
+						columnPosition+=10;
+				}
+				else if(mx > 1200 && mx < 1220 && my > 740 && my < 760){
+					if(sudden > 0)
+						sudden-=20;
+				}
+				else if(mx > 1400 && mx < 1420 && my > 740 && my < 760){
+					if(sudden < 800)
+						sudden+=20;
+				}
+				else if(mx > 1200 && mx < 1220 && my > 840 && my < 860){
+					if(lift > 0)
+						lift-=20;
+				}
+				else if(mx > 1400 && mx < 1420 && my > 840 && my < 860){
+					if(lift < 800)
+						lift+=20;
+				}
+				
+				else if(my < 700){
+					for(int i = 5; i >= 0; i--){
+						curpage = (curpage+1) % 2;
+						setactivepage(curpage);
+						
+						putimage(0, 700, Pconfig, COPY_PUT);
+						putimage(0, 0- (i*40), preview, COPY_PUT);
+						
+						setvisualpage(curpage);
+						Sleep(10);
+					}
+					out = 0;
+				}
+			}			
+		}
+		if(!out && GetAsyncKeyState(0x20)!=0){
+			for(int i = 0; i <= 5; i++){
+				curpage = (curpage+1) % 2;
+				setactivepage(curpage);
+				
+				putimage(0, 700, Pconfig, COPY_PUT);
+				putimage(0, 0- (i*40), preview, COPY_PUT);
+				
+				setvisualpage(curpage);
+				Sleep(10);
+			} 
+			out = 1;
+		}
+		if(GetAsyncKeyState(0x1B)!=0){
+			free(bg);
+			free(Pconfig);
+			free(preview);
+			break;
+		}	
+	}	
+}
 
+	 
 
 
 void MusicGame::KeyconfigScreen(void *frame){
@@ -269,7 +430,7 @@ void MusicGame::KeyconfigScreen(void *frame){
 								//0xC0 ` ~
 							}
 						}
-						Sleep(10);
+						Sleep(5);
 					}
 					NK:
 					keys[i] = newkey;

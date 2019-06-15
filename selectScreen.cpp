@@ -287,14 +287,14 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 					int key = buf2[9];
 					buf2[9] = 0x0710807;
 					for(int k = 0; k < 9; k++){
-						buf2[9] += buf2[k] ^ !buf2[k+1];
+						buf2[9] += !(buf2[k] ^ !buf2[k+1]);
 						buf2[9] = buf2[9] << 2;
 
 					}
-					cout <<"key"<< key << "data" << buf2[9] << endl;
+					//cout <<"key"<< key << "data" << buf2[9] << endl;
 					if(key == buf2[9]){
-						cout << "found record" << endl;
-						cout << buf[0] << buf[1] << buf[2];
+						//cout << "found record" << endl;
+						//cout << buf[0] << buf[1] << buf[2];
 					}
 				}
 			}

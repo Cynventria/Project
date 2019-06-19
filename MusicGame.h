@@ -125,7 +125,7 @@ class MusicGame{
 		
 		void resultScreen(song, gameResult);
 		
-		int pvScreen(int, int, int, void*, void*, void*, void*);  //miscellaneous methods
+		int pvScreen(int, int, int, void*, void*, void*, void*, void*);  //miscellaneous methods
 		void configScreen(int, void*);
 		void KeyconfigScreen(void*);
 		void ModconfigScreen(void*);

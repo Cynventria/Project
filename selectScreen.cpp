@@ -44,9 +44,13 @@ int MusicGame::selectScreen(){
 	void *PREVback = malloc(imagesize(0, 0, 1440, 900));
 	getimage(0, 0, 1440, 900, PREVback);
 	
-	readimagefile( ".\\resources\\START.jpg", 0, 0, 200, 100);  //subscreen of PV
-	void *START = malloc(imagesize(0, 0, 200, 100));
-	getimage(0, 0, 200, 100, START);
+	readimagefile( ".\\resources\\START.jpg", 0, 0, 300, 100);  //subscreen of PV
+	void *START = malloc(imagesize(0, 0, 300, 100));
+	getimage(0, 0, 300, 100, START);
+	
+	readimagefile( ".\\resources\\START2.jpg", 0, 0, 300, 100);  //subscreen of PV
+	void *START2 = malloc(imagesize(0, 0, 300, 100));
+	getimage(0, 0, 300, 100, START2);
 	
 	Sleep(200);
 	
@@ -55,6 +59,7 @@ int MusicGame::selectScreen(){
 	cleardevice();
 	
 	settextstyle(SANS_SERIF_FONT, HORIZ_DIR, 2);
+	setlinestyle(SOLID_LINE, 0, NORM_WIDTH);
 	
 	clearmouseclick(WM_LBUTTONDOWN);
 	
@@ -82,7 +87,7 @@ int MusicGame::selectScreen(){
 			cout << "read image file: " << (songs[page+clicked].dir + songs[page+clicked].backGround) << endl;
 			
 			readBeatmap(page+clicked);
-			if(pvScreen(1, cur_page, page+clicked, PREVback, songBG, frame, START) ){
+			if(pvScreen(1, cur_page, page+clicked, PREVback, songBG, frame, START, START2) ){
 				free(bg);
 				free(bar);
 				free(up);
@@ -111,7 +116,7 @@ int MusicGame::selectScreen(){
 		for(int i = 0; i < 14; i++){           //PRINT LIST
 			
 			int pos = page+i;
-			int x = 100+(14-(i-scrollGain*0.2))*(i-scrollGain*0.2)*4;
+			int x = 100+(14-(i-scrollGain*0.2))*(1+(i-scrollGain*0.2))*4;
 			int y = (i-scrollGain*0.2)*70 +10;
 			
 			if(pos >= songcount) break;
@@ -120,7 +125,7 @@ int MusicGame::selectScreen(){
 			outtextxy(x, y, tmp);
 			
 			if(on == i){
-				putimage(x-35, y-15, bar, OR_PUT);
+				putimage(x-45, y-15, bar, OR_PUT);
 			}
 			
 		}
@@ -186,7 +191,7 @@ int MusicGame::selectScreen(){
 	    	}
 		}
 		else if(mousex()>5 && mousex()<70 && mousey()>825 && mousey()<890){  //scroll down
-			if(page + 14 < songcount)  scrollGain+=1;
+			if(page + 14 <= songcount)  scrollGain+=1;
 			if(scrollGain >= 5){
 				page++;
 				scrollGain = 0;
@@ -202,7 +207,7 @@ int MusicGame::selectScreen(){
 	
 }
 
-int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame, void *START){   //direction = 1 or -1
+int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, void *songBG, void *frame, void *START, void *START2){   //direction = 1 or -1
 	
 	clearmouseclick(WM_LBUTTONDOWN);
 	//if(direction > 0) readBeatmap(page+clicked);
@@ -240,7 +245,7 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 		
 		
 		//outtextxy(2150-100*i, 850, "PLAY");
-		putimage(2240-100*i, 800, START, COPY_PUT);
+		//putimage(2100-100*i, 800, START, COPY_PUT);
 		
 		setbkcolor(BLACK);
 		setcolor(WHITE);
@@ -251,7 +256,7 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 		
 	}
 	
-	
+	putimage(1120, 800, START, COPY_PUT);
 	char re[20];
 	
 	string mciCommand = "open \"" + songs[index].dir + songs[index].AudioFilename + "\" type mpegvideo alias mp3";
@@ -269,43 +274,88 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 		
 		
 		ifstream record(".\\data\\records", ios::in | ios::binary);
-		int buf2[10] = {0};
-		char buf[40] = {0};
+		int buf2[11] = {0};
+		char buf[44] = {0};
+		int nowrank = 1;
+		vector <gameResult> r;
+		
 		
 		if(record){
 
 		
-			while(!record.eof()){
-				for(int j = 0; j < 40; j++){
+			while(1){
+				for(int j = 0; j < 44; j++){
 					record.get(buf[j]);
 				}
-				memcpy(buf2, buf, 40);
+				memcpy(buf2, buf, 44);
 				
-
+				if(record.eof()) break;
+				cout << "ID " << buf2[0]  << " " << songs[index].BeatmapID << endl ; 
+				
 				if(buf2[0] == songs[index].BeatmapID){
 					//cout << "found record" << endl;
-					int key = buf2[9];
-					buf2[9] = 0x0710807;
-					for(int k = 0; k < 9; k++){
-						buf2[9] += !(buf2[k] ^ !buf2[k+1]);
-						buf2[9] = buf2[9] << 2;
-
+					int key = buf2[10];
+					buf2[10] = 0x0710807;
+					for(int k = 0; k < 10; k++){
+						buf2[10] += (buf2[k] ^ !buf2[k+1]);
+						buf2[10] = buf2[10] << k;
 					}
+					cout << buf2[10] << endl;
+					cout << key << endl;
+					//songs[i].BeatmapID, r.rank, r.score, r.perfect, r.great, r.good, r.bad, r.miss, r.maxcombo, 0x0710807}
+					if(buf2[10] == key){
+						gameResult result = {1, buf2[4], buf2[5], buf2[5], buf2[5], buf2[7], buf2[3], 0, 0, buf2[9], buf2[2], 0};
+						r.push_back(result);
+					}
+					
 					//cout <<"key"<< key << "data" << buf2[9] << endl;
-					if(key == buf2[9]){
+					//if(key == buf2[9]){
+					
+						
 						//cout << "found record" << endl;
 						//cout << buf[0] << buf[1] << buf[2];
-					}
+					//}
 				}
 			}
-			
 		}
-		
 		record.close();
+		for(int k = 0; k < r.size(); k++){
+			for(int l = k; l <r.size(); l++ ){
+				if(r[k].score < r[l].score){
+					swap(r[k], r[l]);
+				}
+			}
+		}
+		setbkcolor(WHITE);
+		setcolor(CYAN);
+		
+		if(r.size() == 0){
+			outtextxy(1000, 600, "No record set!");
+		}
+
+		
+		for(int  k = 0; k <= 5 && k < r.size(); k++){
+			
+			float acc = r[k].perfect*1200 + r[k].great*600 + r[k].good*300 + r[k].bad *100;
+			acc /= 12*(r[k].perfect + r[k].great + r[k].good + r[k].bad + r[k].miss);
+			sprintf(tmp, "#%d    %c %12d    %.2f%%   %4dx", k+1, r[k].rank==1 ? 'S':'A'+r[k].rank-2, r[k].score, acc, r[k].maxcombo);
+			outtextxy(900-15*k, 500+50*k, tmp);
+			line(850 - 15*k, 490+50*k, 1400 -15*k, 490+50*k);
+		}
+		r.clear();
+		
+		setbkcolor(BLACK);
+		setcolor(WHITE);
+		
 		
 		int click = 0, lastc = 0;
 	
 		while(1){    //detect back button on PV screen
+			if(mousex() > 1120 && mousey() > 800){
+				putimage(1120, 800, START2, COPY_PUT);
+			}
+			else putimage(1120, 800, START, COPY_PUT);
+			
 			if(click == 1 && lastc == 0){
 
 
@@ -315,7 +365,7 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 					mciSendString("close mp3", NULL, 0, NULL);
 					break;
 				}
-				else if(mousex() > 1240 && mousey() > 800){
+				else if(mousex() > 1120 && mousey() > 800){
 					cout << "returned" << endl;
 					
 					//readBeatmap(page+clicked);
@@ -384,7 +434,7 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 		
 		
 		//outtextxy(2150-100*i, 850, "PLAY");
-		putimage(2240-100*i, 800, START, COPY_PUT);
+		//putimage(2100-100*i, 800, START, COPY_PUT);
 		
 		setbkcolor(BLACK);
 		setcolor(WHITE);

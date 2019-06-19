@@ -91,16 +91,16 @@ void MusicGame::resultScreen(gameResult r, int i){
 		ofstream file(".\\data\\records", ios::out | ios::app | ios::binary);
 		//sprintf(tmp, "%d %d %d %d %d %d %d %d %d\n", songs[i].BeatmapID, r.rank, r.score, r.perfect, r.great, r.good, r.bad, r.miss, r.maxcombo);
 		//file << tmp;
-		int data[10] = {songs[i].BeatmapID, r.rank, r.score, r.perfect, r.great, r.good, r.bad, r.miss, r.maxcombo, 0x0710807};
+		int data[11] = {songs[i].BeatmapID, gameMode, r.rank, r.score, r.perfect, r.great, r.good, r.bad, r.miss, r.maxcombo, 0x0710807};
 		
-		for(int k = 0; k < 9; k++){
-			data[9] += !(data[k] ^ !data[k+1]);
-			data[9] = data[9] << 2;
+		for(int k = 0; k < 10; k++){
+			data[10] += (data[k] ^ !data[k+1]);
+			data[10] = data[10] << k;
 
 		}
-		file.write((char *)data, 40);
+		file.write((char *)data, 44);
 		
-		cout << "key " << data[9] << endl;
+		cout << "key " << data[10] << endl;
 		
 		cout << "error = " << r.error << endl << "unstable rate=" << r.unstableRate << endl;
 		

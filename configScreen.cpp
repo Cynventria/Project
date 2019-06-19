@@ -125,7 +125,7 @@ void MusicGame::configScreen(int page, void *frame){
 		sprintf(tmp, "%.1f", speed);
 		outtextxy(300, 800, tmp);	
 		
-		sprintf(tmp, "%d", offset);
+		sprintf(tmp, "%4d", offset);
 		outtextxy(520, 800, tmp);
 		
 		putimage(0, 700, configPage, OR_PUT);
@@ -161,6 +161,7 @@ void MusicGame::configScreen(int page, void *frame){
 	
 }
 void MusicGame::PositionconfigScreen(void *frame){
+	GetAsyncKeyState(0x01);
 	setactivepage(0);
 	putimage(0, 0, frame, COPY_PUT);
 	
@@ -183,13 +184,14 @@ void MusicGame::PositionconfigScreen(void *frame){
 	int curpage;
 	int mx, my;
 	int out = 1;
+	int click = 0, lastc = 0;
 	
 	setlinestyle(SOLID_LINE, 0, THICK_WIDTH);
 	putimage(0, 0, bg, COPY_PUT);
 	
 	
 	while(1){
-		GetAsyncKeyState(0x20);
+		//GetAsyncKeyState(0x20);
 		Sleep(10);
 		
 		curpage = (curpage+1) % 2;
@@ -221,26 +223,31 @@ void MusicGame::PositionconfigScreen(void *frame){
 			setbkcolor(BLACK);
 			setcolor(WHITE);
 			
-			sprintf(tmp, "%d", columnWidth);
-			outtextxy(80, 810, tmp);
+			sprintf(tmp, "%4d", columnWidth);
+			outtextxy(75, 810, tmp);
 			
-			sprintf(tmp, "%d", columnPosition);
+			sprintf(tmp, "%4d", columnPosition);
 			outtextxy(350, 810, tmp);
 			
-			sprintf(tmp, "%d", sudden);
-			outtextxy(1300, 720, tmp);
+			sprintf(tmp, "%4d", sudden);
+			outtextxy(1250, 720, tmp);
 			
-			sprintf(tmp, "%d", lift);
-			outtextxy(1300, 820, tmp);
+			sprintf(tmp, "%4d", lift);
+			outtextxy(1250, 820, tmp);
 			
 			putimage(0, 700, Pconfig, OR_PUT);
 		}
 		
 		setvisualpage(curpage);
 		
+		lastc = click;
+		click = GetAsyncKeyState(0x01)!=0 ;
+
+		/*if(ismouseclick(WM_LBUTTONDOWN)){
+			clearmouseclick(WM_LBUTTONDOWN);*/
+			
+		if(click != 0 && lastc == 0){
 		
-		if(ismouseclick(WM_LBUTTONDOWN)){
-			clearmouseclick(WM_LBUTTONDOWN);
 			mx = mousex();
 			my = mousey();
 			

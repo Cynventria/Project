@@ -99,23 +99,11 @@ gameResult MusicGame::game(int i){
 
 	
 	void *light = malloc(imagesize(0, 0, columnWidth, 500));
-	if(mods & 4) readimagefile(".\\resources\\light-reverse.jpg", 0, 0, columnWidth, 500);
+	if(mods & 4) readimagefile(".\\resources\\light2.jpg", 0, 0, columnWidth, 500);
 	else readimagefile(".\\resources\\light.jpg", 0, 0, columnWidth, 500);
 	getimage(0, 0, columnWidth, 500, light);
 	
-	/*void *lights[4];
-	lights[0] = malloc(imagesize(0, 0, columnWidth, 500));
-	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
-	getimage(0, 0, columnWidth, 500, lights[0]);
-	lights[1] = malloc(imagesize(0, 0, columnWidth, 500));
-	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
-	getimage(0, 0, columnWidth, 500, lights[1]);
-	lights[2] = malloc(imagesize(0, 0, columnWidth, 500));
-	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
-	getimage(0, 0, columnWidth, 500, lights[2]);
-	lights[3] = malloc(imagesize(0, 0, columnWidth, 500));
-	readimagefile(".\\resources\\light-PERFECT.jpg", 0, 0, columnWidth, 500);
-	getimage(0, 0, columnWidth, 500, lights[3]);*/
+	
 	
 	
 	
@@ -123,7 +111,7 @@ gameResult MusicGame::game(int i){
 	readimagefile( ".\\resources\\paused2.jpg", 200, 350, 1440, 550);  
 	getimage(200, 350, 1440, 550, paused);
 	void *pause_back = malloc(imagesize(0, 0, 1440, 200));
-	readimagefile( ".\\resources\\pause_back.jpg", 0, 0, 1440, 200);  
+	readimagefile( ".\\resources\\pause_back2.jpg", 0, 0, 1440, 200);  
 	getimage(0, 0, 1440, 200, pause_back);
 	
 	
@@ -175,9 +163,6 @@ gameResult MusicGame::game(int i){
 		
 		for(int k = 0; k < each; k++){
 			map[Locas[k]].push_back( hobj(songs[i].hitobjects[j].time, songs[i].hitobjects[j].length * songs[i].hitobjects[j].repeat / (100.0*songs[i].SliderMultiplier) * songs[i].timingpoints[0].msPerBeat ) );
-			//cout << songs[i].hitobjects[j].time << endl;
-			//cout << map[k].back().time << endl;
-			//cout << map[k].back().length << endl;
 		}
 		
 		free(Locas);
@@ -209,9 +194,6 @@ gameResult MusicGame::game(int i){
 	int item = 0;
 	
 	
-	/*for(int j = 0; j < songs[i].hitobjects.size(); j++){
-		cout << songs[i].hitobjects[j].x << ", " << songs[i].hitobjects[j].y << ", " << songs[i].hitobjects[j].time << endl;
-	} */
 	
 	
 	
@@ -256,12 +238,6 @@ gameResult MusicGame::game(int i){
 			t*=10;
 		}
 		
-//draw life
-		if(result.life > 0){
-			setcolor(CYAN);
-			arc(columnPosition+columnWidth*gameMode/2, 232, 90, result.life*360/1000+90, 110);//life
-			setcolor(WHITE);
-		}
 	
 //draw light	
 		for(int k = 0;  k< gameMode ; k++){
@@ -271,32 +247,24 @@ gameResult MusicGame::game(int i){
 			}
 			
 		}
+		
 //put judgement image back
 		t = last;
 		if(t != -1){
 			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][0], XOR_PUT);
 		}
-		
+			
 
-//draw lines	
-		setcolor(WHITE);
-		if(!(mods & 2)){
-			for(int j = 0; j <= gameMode; j++){
-				line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
-			}
-			if(mods & 4) line(columnPosition, 100, columnPosition+gameMode*columnWidth, 100);
-			else line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
-		}
 		
 		setfillstyle(1, WHITE);
 
 				
 //play eff sound
-		for(int j = 0; j < 4; j++){
-			if(keySig[j]==1){
+		for(int j = 0; j < gameMode; j++){
+			/*if(keySig[j]==1){
 				if(mods & 4) bar(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*(j+1), 100);
 				else bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
-			}
+			}*/
 			if(keySig[j] ==1 &&  lastkeySig[j] == 0){
 				PlaySound(".\\resources\\normal.wav", NULL, SND_FILENAME | SND_ASYNC);  
 			}
@@ -335,25 +303,25 @@ gameResult MusicGame::game(int i){
 						if(ato > 100 || ato < -100){
 							result.bad++;
 							result.life -= 10;
-							result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 100+100.0*(result.combo*result.combo)/(1000*1000);
 							last = 3;
 						}
 						else if(ato > 75 || ato < -75){
 							result.good++;
-							result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 300+300.0*(result.combo*result.combo)/(1000*1000);
 							last = 2;
 						}
 						else if(ato > 50 || ato < -50){
 							result.great++;
 							result.life += 5;
-							result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 600+600.0*(result.combo*result.combo)/(1000*1000);
 							last = 1;
 						}
 						else {
 							result.perfect++;
 							result.life += 25;
 							if(result.life >= 1000) result.life = 1000;
-							result.score += 1200+1200.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 1200+1200.0*(result.combo*result.combo)/(1000*1000);
 							last = 0;
 							
 						}
@@ -375,14 +343,14 @@ gameResult MusicGame::game(int i){
 						if(holdato > 100 || holdato < -100){
 							result.bad++;
 							result.life -= 10;
-							result.score += 100+100.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 100+100.0*(result.combo*result.combo)/(1000*1000);
 							last = 3;
 							result.combo++;
 							map[k][j].enderr = ato;
 						}
 						else if(holdato > 75 || holdato < -75){
 							result.good++;
-							result.score += 300+300.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 300+300.0*(result.combo*result.combo)/(1000*1000);
 							last = 2;
 							result.combo++;
 							map[k][j].enderr = ato;
@@ -390,7 +358,7 @@ gameResult MusicGame::game(int i){
 						else if(holdato > 50 || holdato < -50){
 							result.great++;
 							result.life += 5;
-							result.score += 600+600.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 600+600.0*(result.combo*result.combo)/(1000*1000);
 							last = 1;
 							result.combo++;
 							map[k][j].enderr = ato;
@@ -399,7 +367,7 @@ gameResult MusicGame::game(int i){
 							result.perfect++;
 							result.life += 25;
 							if(result.life >= 1000) result.life = 1000;
-							result.score += 1200+1200.0*(result.combo*result.combo)/(5000*5000);
+							result.score += 1200+1200.0*(result.combo*result.combo)/(1000*1000);
 							last = 0;
 							result.combo++;
 							map[k][j].enderr = ato;
@@ -500,11 +468,62 @@ gameResult MusicGame::game(int i){
 //judge finished and print notes finished
 
 //put judgement image front
+		/*if(t != -1){
+			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][0], XOR_PUT);
+			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][1], OR_PUT);
+		}*/
+		
+//lane cover
+		
+		setfillstyle(1, BLACK);
+		
+		if(mods & 4){
+			bar(columnPosition, 100, columnPosition+columnWidth*gameMode, 100+sudden);
+			bar(columnPosition, 900, columnPosition+columnWidth*gameMode, 900-lift);
+		}
+		else{
+			bar(columnPosition, 0, columnPosition+columnWidth*gameMode, sudden);
+			bar(columnPosition, 800, columnPosition+columnWidth*gameMode, 800-lift);
+		}
+		
+		
+		
+//put light if covered
+		if(lift != 0 || sudden != 0){
+			for(int k = 0;  k< gameMode ; k++){
+				if(keySig[k]){
+					if(mods & 4) putimage(columnPosition+(columnWidth*k), 0, light, OR_PUT);
+					 else putimage(columnPosition+(columnWidth*k), 400, light, OR_PUT);
+				}
+			}
+		}
+		
+//put key square
+		setcolor(WHITE);
+		setfillstyle(1, WHITE);
+		for(int j = 0; j < gameMode; j++){
+			if(keySig[j]){
+				if(mods & 4) bar(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*(j+1), 100);
+					else bar(columnPosition+columnWidth*j, 800, columnPosition+columnWidth*(j+1), 900);
+			}
+		}
+		
+//draw lines	
+		
+		if(!(mods & 2)){
+			for(int j = 0; j <= gameMode; j++){
+				line(columnPosition+columnWidth*j, 0, columnPosition+columnWidth*j, 900);
+			}
+			if(mods & 4) line(columnPosition, 100, columnPosition+gameMode*columnWidth, 100);
+			else line(columnPosition, 800, columnPosition+gameMode*columnWidth, 800);
+		}
+		
+//put judgement image front
 		if(t != -1){
+			if(lift > 200 || sudden > 672 && last != -1)putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][0], XOR_PUT);
 			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][0], XOR_PUT);
 			putimage(columnPosition+(columnWidth*gameMode-256)/2, 600, judge[t][1], OR_PUT);
 		}
-		
 		
 		
 		
@@ -522,9 +541,16 @@ gameResult MusicGame::game(int i){
 		else if(result.life > 1000){
 			result.life = 1000;
 		}	
-		//cout << result.life << endl;
 		
-
+		
+//draw life
+		if(result.life > 0){
+			setcolor(CYAN);
+			arc(columnPosition+columnWidth*gameMode/2, 232, 90, result.life*360/1000+90, 110);//life
+			setcolor(WHITE);
+		}
+		
+//detection
 		for(int j = 0; j < gameMode; j++){
 			lastkeySig[j] = keySig[j];
 			if(GetAsyncKeyState(keys[j])!=0) keySig[j]=1;

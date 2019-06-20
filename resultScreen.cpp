@@ -29,55 +29,81 @@ void MusicGame::resultScreen(gameResult r, int i){
 	readimagefile(".\\resources\\BACK22.jpg", 0, 750, 300, 900);
 	getimage(0, 750, 300, 900, bk2);
 	
+	void *resultF = malloc(imagesize(0, 0, 1440, 900));
+	readimagefile( ".\\resources\\result.jpg", 0, 0, 1440, 900);
+	getimage(0, 0, 1440, 900, resultF);
+	
+	void *resultB = malloc(imagesize(0, 0, 1440, 900));
+	readimagefile( ".\\resources\\result2.jpg", 0, 0, 1440, 900);
+	getimage(0, 0, 1440, 900, resultB);
+	
 	
 	if(r.passed){
 
-		
-		void *ov = malloc(imagesize(0, 0, 1440, 900));
-		readimagefile( ".\\resources\\resultBG.jpg", 0, 0, 1440, 900);
-		getimage(0, 263, 1440, 580, ov);
-		
-		
+
 		
 		cleardevice();
 
-		void *rk = malloc(imagesize(0, 0, 200, 280));
+		void *rk = malloc(imagesize(0, 0, 300, 275));
 		sprintf(tmp, ".\\resources\\RA%d.jpg", r.rank);
-		readimagefile( tmp, 0, 0, 200, 300);
-		getimage(0, 0, 200, 280, rk);
+		readimagefile( tmp, 0, 0, 300, 350);
+		getimage(0, 75, 300, 350, rk);
 		
 		
 		cleardevice();
 		putimage(0, 750, bk2, XOR_PUT);
+		putimage(0, 0, resultB, OR_PUT);
 		
 		
 		putimage(0, 0, BG, OR_PUT);
 		
-		putimage(0, 263, ov, COPY_PUT);
+		putimage(0, 0, resultB, XOR_PUT);
+		putimage(0, 0, resultF, OR_PUT);
 		
-		putimage(1100, 283, rk, COPY_PUT);
+		
+		putimage(1150, 300, rk, COPY_PUT);
 		
 		
 		
 		setbkcolor(WHITE);
 		setcolor(CYAN);
+		settextstyle(GOTHIC_FONT, HORIZ_DIR, 4);
+		//setusercharsize(1, 5, 1, 1);
 		
-		sprintf(tmp, "%d", r.perfect);
-		outtextxy(300, 300, tmp);
-		sprintf(tmp, "%d", r.great);
-		outtextxy(300, 400, tmp);
-		sprintf(tmp, "%d", r.good);
-		outtextxy(300, 500, tmp);
-		sprintf(tmp, "%d", r.bad);
-		outtextxy(660, 300, tmp);
-		sprintf(tmp, "%d", r.miss);
-		outtextxy(660, 400, tmp);
+		sprintf(tmp, "%4d", r.perfect);
+		outtextxy(230, 340, tmp);
+		sprintf(tmp, "%4d", r.great);
+		outtextxy(230, 390, tmp);
+		sprintf(tmp, "%4d", r.good);
+		outtextxy(230, 440, tmp);
+		sprintf(tmp, "%4d", r.bad);
+		outtextxy(230, 490, tmp);
+		sprintf(tmp, "%4d", r.miss);
+		outtextxy(230, 540, tmp);
 		
-		sprintf(tmp, "%d", r.maxcombo);
-		outtextxy(660, 520, tmp);
 		
-		sprintf(tmp, "Score: %d", r.score);
-		outtextxy(1900, 280, tmp);
+		float acc = r.perfect*1200 + r.great*600 + r.good*300 + r.bad *100;
+		acc /= 12*(r.perfect + r.great + r.good + r.bad + r.miss);
+		
+		sprintf(tmp, "%.2f%%", acc);
+		outtextxy(630, 425, tmp);
+		sprintf(tmp, "%4dx", r.maxcombo);
+		outtextxy(660, 475, tmp);
+		
+		settextstyle(GOTHIC_FONT, HORIZ_DIR, 3);
+		
+		if(r.error > 0) sprintf(tmp, "%.2f(+%d)", r.unstableRate, r.error);
+		else sprintf(tmp, "%.2f(%d)", r.unstableRate, r.error);
+		outtextxy(580, 540, tmp);
+		
+		settextstyle(GOTHIC_FONT, HORIZ_DIR, 6);
+		
+		
+		sprintf(tmp, "%9d", r.score);
+		for(int j = 0; j < 9; j++){
+			if(tmp[j] == ' ') tmp[j] = '0'; 
+		}
+		outtextxy(600, 350, tmp);
 		
 		
 		
@@ -85,7 +111,7 @@ void MusicGame::resultScreen(gameResult r, int i){
 		setcolor(WHITE);
 		
 		free(rk);
-		free(ov);
+		
 		
 		
 		ofstream file(".\\data\\records", ios::out | ios::app | ios::binary);
@@ -116,11 +142,12 @@ void MusicGame::resultScreen(gameResult r, int i){
 		getimage(0, 263, 1440, 580, ov);
 		
 		cleardevice();
-		
 		putimage(0, 750, bk2, XOR_PUT);
+		putimage(0, 750, resultB, XOR_PUT);
 		
 		putimage(0, 0, BG, OR_PUT);
 		
+		putimage(0, 750, resultB, XOR_PUT);
 		putimage(0, 263, ov, COPY_PUT);
 		
 		free(ov);

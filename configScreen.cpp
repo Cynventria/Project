@@ -269,20 +269,20 @@ void MusicGame::PositionconfigScreen(void *frame){
 						columnPosition+=10;
 				}
 				else if(mx > 1200 && mx < 1220 && my > 740 && my < 760){
-					if(sudden > 0)
-						sudden-=20;
+					sudden-=20;
+					if(sudden < 0) sudden = 0;
 				}
 				else if(mx > 1400 && mx < 1420 && my > 740 && my < 760){
-					if(sudden < 800)
-						sudden+=20;
+					sudden+=20;
+					if(sudden > 800) sudden = 800;
 				}
 				else if(mx > 1200 && mx < 1220 && my > 840 && my < 860){
-					if(lift > 0)
-						lift-=20;
+					lift-=20;
+					if(lift < 0) lift=0;
 				}
 				else if(mx > 1400 && mx < 1420 && my > 840 && my < 860){
-					if(lift < 800)
-						lift+=20;
+					lift+=20;
+					if(lift > 800) lift = 800;
 				}
 				
 				else if(my < 700){
@@ -506,8 +506,10 @@ void MusicGame::saveConfig(){
 	conf << "offset=" << offset << endl;
 	conf << "columnWidth=" << columnWidth << endl;
 	conf << "columnPosition=" << columnPosition << endl;
-	sprintf(tmp, "%d %d %d %d %d %d %d", keys[0], keys[1], keys[2], keys[3], keys[4], keys[5], keys[6]);
-	conf << "keys=" << tmp << endl;
+	conf << "sudden=" << sudden << endl;
+	conf << "lift=" << lift << endl;
+	sprintf(tmp, "keys= %d %d %d %d %d %d %d", keys[0], keys[1], keys[2], keys[3], keys[4], keys[5], keys[6]);
+	conf << tmp << endl;
 	
 	conf.close();
 }

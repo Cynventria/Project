@@ -70,8 +70,16 @@ MusicGame::MusicGame(){  //«Øºc¦¡¡A
 			int cp = atoi(str.substr(15).c_str());
 			if(cp > 0) columnPosition = cp;
 		}
+		else if(str.find("sudden=") == 0){
+			int su = atoi(str.substr(7).c_str());
+			if(su > 0)  sudden = su;
+		}
+		else if(str.find("lift=") == 0){
+			int li = atoi(str.substr(5).c_str());
+			if(li > 0)  lift = li;
+		}
 		else if(str.find("keys=") == 0){
-			//sscanf(str.substr(5).c_str(), "%d %d %d %d %d %d %d", keys, keys+1, keys+2, keys+3, keys+4, keys+5, keys+6);
+			sscanf(str.substr(5).c_str(), "%d %d %d %d %d %d %d", keys, keys+1, keys+2, keys+3, keys+4, keys+5, keys+6);
 		}
 	}
 	

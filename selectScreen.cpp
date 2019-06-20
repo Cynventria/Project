@@ -303,8 +303,8 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 					cout << buf2[10] << endl;
 					cout << key << endl;
 					//songs[i].BeatmapID, r.rank, r.score, r.perfect, r.great, r.good, r.bad, r.miss, r.maxcombo, 0x0710807}
-					if(buf2[10] == key){
-						gameResult result = {1, buf2[4], buf2[5], buf2[5], buf2[5], buf2[7], buf2[3], 0, 0, buf2[9], buf2[2], 0};
+					if(buf2[10] == key && buf2[1] == gameMode){
+						gameResult result = {1, buf2[4], buf2[5], buf2[6], buf2[7], buf2[8], buf2[3], 0, 0, buf2[9], buf2[2], 0};
 						r.push_back(result);
 					}
 					
@@ -449,9 +449,3 @@ int MusicGame::pvScreen(int direction, int cur_page, int index, void *PREVback, 
 	
 	
 }
-				
-				
-
-	
-	
-

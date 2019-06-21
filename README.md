@@ -16,6 +16,7 @@
 打到一半按esc可以暫停
 
 **不建議用aspire圖或是非std的圖，我沒有去判斷那些亂七八糟的狀況**
+
 **不支援變速圖，我只抓第一個timing point**
 
 4說，這裡的unstable rate是osu!中的1/10

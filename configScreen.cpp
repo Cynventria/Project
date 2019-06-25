@@ -391,6 +391,9 @@ void MusicGame::KeyconfigScreen(void *frame){
 				
 				if(ismouseclick(WM_LBUTTONDOWN)){
 					clearmouseclick(WM_LBUTTONDOWN);
+					for(int i = 0x30; i < 0x5A; i++){
+						GetAsyncKeyState(i);
+					}
 					char newkey = 0;
 					while(1){  //waiting for key input
 						if(GetAsyncKeyState(0x1B)!=0){ //esc

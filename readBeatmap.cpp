@@ -24,8 +24,9 @@ void MusicGame::readBeatmap(int i){
 	string str;
 	while(getline(ifs, str)){
 		if(str.find("[TimingPoints]") == 0){
+			
 			getline(ifs, str);
-			while(str[0] >= '0' && str[0] <= '9'){
+			while(str[0] >= '0' && str[0] <= '9'|| str[0] == '-'){
 				TimingPoint tp(str);	
 				songs[i].timingpoints.push_back(tp);
 				getline(ifs, str);
@@ -33,8 +34,9 @@ void MusicGame::readBeatmap(int i){
 		}
 		else if(str.find("[HitObjects]") == 0){
 			//HitObject &obj  = *(new HitObject());
+			
 			getline(ifs, str);
-			while(str[0] >= '0' && str[0] <= '9'){
+			while(str[0] >= '0' && str[0] <= '9' || str[0] == '-'){
 				HitObject obj(str);
 				songs[i].hitobjects.push_back(obj);
 				if(!getline(ifs, str))break;
@@ -79,7 +81,8 @@ HitObject::HitObject(string str){
 	int con = 0;
 	int type;
 	string val;
-	
+
+	//cout<<str<<endl;
 	while(str[p] != ','){val += str[p++];}
 	x = atoi(val.c_str());
 	val = "";
@@ -108,6 +111,7 @@ HitObject::HitObject(string str){
 	p++;
 	rec = p;
 	
+//	cout<<"sit select"<<endl;
 	while(str[rec] != '\0'){
 		if(str[rec] == '|') {
 			sit = 1;
@@ -119,7 +123,7 @@ HitObject::HitObject(string str){
 		rec++; 
 	}
 	
-		if((sit != 1) && (con == 0)){if(con == 0) sit = 2;}
+	if((sit != 1) && (con == 0)){if(con == 0) sit = 2;}
 	
 	else if((sit != 1) && (con == 5)) sit = 3;
 	else if(sit != 1)sit = 4;
@@ -127,7 +131,7 @@ HitObject::HitObject(string str){
 	//cout<<sit<<","<<con<<","<<ccon<<endl;
 	
 	if(sit == 1) {
-
+	
 		if(str[p] == 'L') sliderType = 1;
 		else if (str[p] == 'P') sliderType = 2;
 		else if (str[p] == 'B') sliderType = 3;
@@ -144,31 +148,49 @@ HitObject::HitObject(string str){
 			sliderPoints.push_back(num);
 
 			val = "";
-			if(str[p] == ',') break;
+			if(str[p] == ','||(p + 1) > str.size()) break; 
 			//cout<<"num : "<<num<<endl;
 			p++;	
 		}
 		p++;
 		
-		while(str[p] != ',') {val += str[p++];}
+		while(str[p] != ',') {
+			val += str[p++];
+			if(p + 1 > str.size()) goto END;
+		}
 		repeat = atoi(val.c_str());
 		val = "";
 		p++;
 		
-		while(str[p] != ','){val += str [p++];}
+		while(str[p] != ',') {
+			val += str[p++];
+			if(p + 1 > str.size()) goto END;
+		}		
 		length = atoi(val.c_str());
 		val = "";
 		p++;
 		
-		while(str[p] != ','){val += str [p++];}
+		while(str[p] != ',') {
+			val += str[p++];
+			if(p + 1 > str.size()) goto END;
+		}
 		p++;
 		
-		while(str[p] != ','){val += str [p++];}
+		while(str[p] != ',') {
+			val += str[p++];
+			if(p + 1 > str.size()) goto END;
+		}
 		p++;
 		
-		while(str[p] != ':'){val += str [p++];}
+		while(str[p] != ':') {
+			val += str[p++];
+			if(p + 1 > str.size()) goto END;
+		}
 		sampleSet = atoi(val.c_str());
 		val = "";
+		
+		END:;
+		//	cout<< "END"<<endl;
 	}
 
 	
@@ -201,6 +223,8 @@ HitObject::HitObject(string str){
 TimingPoint::TimingPoint(string str){
 	int p = 0;
 	string val;
+	
+	//cout<<str<<endl;
 
 	while(str[p] != ','){val += str [p++];}
 	offset = atoi(val.c_str());
